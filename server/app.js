@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { sequelize, conectarDB } from "./config/db.js";
+import "./models/index.js";
+
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 

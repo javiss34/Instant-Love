@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
 
-const Resultado = sequelize.define(
-  "Resultado",
+const Outcome = sequelize.define(
+  "Outcome",
   {
     id: {
       type: DataTypes.UUID,
@@ -30,4 +30,4 @@ const Resultado = sequelize.define(
   },
 );
 
-export {Resultado};
+export {Outcome};
