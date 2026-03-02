@@ -32,4 +32,4 @@ const CallHistory = sequelize.define(
   { timestamps: true },
 );
 
-export {CallHistory};
+export { CallHistory };

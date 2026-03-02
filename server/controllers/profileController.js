@@ -63,4 +63,4 @@ const actualizarPerfil = async (req, res) => {
   }
 };
 
-export { obtenerPerfil, actualizarPerfil }
+export { obtenerPerfil, actualizarPerfil };
