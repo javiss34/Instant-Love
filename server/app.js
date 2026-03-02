@@ -8,6 +8,10 @@ import {
   voteRoutes,
   reportRoutes
 } from './routes/index.js';
+import express from "express";
+import cors from "cors";
+import { sequelize, conectarDB } from "./config/db.js";
+import "./models/index.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -27,7 +31,19 @@ app.use('/api/reports', reportRoutes);
 app.get('/api/saludo', (req,res) => {
     res.json({mensaje: 'Esto es Instant Love'})
 })
+app.get("/api/saludo", (req, res) => {
+  res.json({ mensaje: "Esto es Instant Love!!" });
+});
 
-app.listen(PORT, () => {
-    console.log(`server on port http://localhost:${PORT}`)
-})
+const iniciarServidor = async () => {
+  await conectarDB();
+  await sequelize.sync({ alter: true });
+  console.log("Modelos sincronizados con instantlovedb");
+  app.listen(PORT, () => {
+    console.log(
+      `Servidor HTTP en ejecución en puerto http://localhost:${PORT}.`,
+    );
+  });
+};
+
+iniciarServidor();
