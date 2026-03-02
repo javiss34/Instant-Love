@@ -2,6 +2,11 @@ import express from "express";
 import cors from "cors";
 import { sequelize, conectarDB } from "./config/db.js";
 import "./models/index.js";
+import authRoutes from "./routes/authRoutes.js"
+import profileRoutes from "./routes/profileRoutes.js"
+import callRoutes from "./routes/callRoutes.js"
+import outcomeRoutes from "./routes/outcomeRoutes.js"
+import reportRoutes from "./routes/reportRoutes.js"
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -9,9 +14,11 @@ const PORT = process.env.PORT ?? 3000;
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/saludo", (req, res) => {
-  res.json({ mensaje: "Esto es Instant Love!!" });
-});
+app.use("/api/auth", authRoutes);
+app.use("/api/perfil", profileRoutes);
+app.use("/api/llamadas", callRoutes);
+app.use("/api/voto", outcomeRoutes);
+app.use("/api/reportes", reportRoutes);
 
 const iniciarServidor = async () => {
   await conectarDB();
