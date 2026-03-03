@@ -27,6 +27,12 @@ const obtenerPerfil = async (req, res) => {
 const actualizarPerfil = async (req, res) => {
   try {
     const { id } = req.params;
+    
+    if (req.usuario.id !== id) {
+      return res.status(403).json({
+        mensaje: "No puedes editar un perfil que no sea el tuyo",
+      });
+    }
 
     const {
       nombre,
