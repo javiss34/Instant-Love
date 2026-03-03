@@ -1,11 +1,20 @@
 import { Sequelize } from "sequelize";
+import dotenv from "dotenv";
 
-const sequelize = new Sequelize("instantlovedb", "root", "", {
-  host: "127.0.0.1",
-  dialect: "mysql",
-  port: 3310,
-  logging: false,
-});
+// Para leer el archivo .env
+dotenv.config();
+
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    host: process.env.DB_HOST,
+    dialect: "mysql",
+    port: process.env.DB_PORT || 3306,
+    logging: false,
+  },
+);
 
 const conectarDB = async () => {
   try {
