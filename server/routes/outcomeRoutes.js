@@ -1,8 +1,9 @@
-import express from "express"
-import { registrarVoto } from "../controllers/outcomeController.js"
+import express from "express";
+import { registrarVoto } from "../controllers/outcomeController.js";
+import { verificarToken } from "../middlewares/authMiddleware.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.put("/:callId", registrarVoto)
+router.put("/:callId", verificarToken, registrarVoto);
 
-export default router
+export default router;

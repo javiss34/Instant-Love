@@ -2,11 +2,11 @@ import express from "express";
 import cors from "cors";
 import { sequelize, conectarDB } from "./config/db.js";
 import "./models/index.js";
-import authRoutes from "./routes/authRoutes.js"
-import profileRoutes from "./routes/profileRoutes.js"
-import callRoutes from "./routes/callRoutes.js"
-import outcomeRoutes from "./routes/outcomeRoutes.js"
-import reportRoutes from "./routes/reportRoutes.js"
+import authRoutes from "./routes/authRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
+import callRoutes from "./routes/callRoutes.js";
+import outcomeRoutes from "./routes/outcomeRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
