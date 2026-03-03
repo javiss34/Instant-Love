@@ -6,7 +6,6 @@ import { CallHistory } from "./CallHistory.js";
 import { Outcome } from "./Outcome.js";
 import { Report } from "./Report.js";
 
-
 // 1. USER <-> PROFILE (1:1)
 User.hasOne(Profile, {
   foreignKey: { name: "id", allowNull: false },
@@ -14,14 +13,12 @@ User.hasOne(Profile, {
 });
 Profile.belongsTo(User, { foreignKey: "id" });
 
-
 // 2. USER <-> SUBSCRIPTION (1:1)
 User.hasOne(Subscription, {
   foreignKey: { name: "userId", allowNull: false },
   onDelete: "CASCADE",
 });
 Subscription.belongsTo(User, { foreignKey: "userId" });
-
 
 // 3. USER <-> CALLHISTORY (N:M Reflexiva)
 User.hasMany(CallHistory, {
@@ -35,7 +32,6 @@ User.hasMany(CallHistory, {
 
 CallHistory.belongsTo(User, { foreignKey: "user1Id", as: "Emisor" });
 CallHistory.belongsTo(User, { foreignKey: "user2Id", as: "Receptor" });
-
 
 // 4. CALLHISTORY <-> OUTCOME (1:1)
 CallHistory.hasOne(Outcome, {
@@ -68,12 +64,4 @@ CallHistory.hasMany(Report, {
 });
 Report.belongsTo(CallHistory, { foreignKey: "callId" });
 
-export {
-  sequelize,
-  User,
-  Profile,
-  Subscription,
-  CallHistory,
-  Outcome,
-  Report,
-};
+export { sequelize, User, Profile, Subscription, CallHistory, Outcome, Report };
