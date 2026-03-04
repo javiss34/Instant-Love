@@ -22,7 +22,7 @@ app.use("/api/reportes", reportRoutes);
 
 const iniciarServidor = async () => {
   await conectarDB();
-  await sequelize.sync({ alter: true });
+  await sequelize.sync({ force: true });
   console.log("Modelos sincronizados con instantlovedb");
   app.listen(PORT, () => {
     console.log(
