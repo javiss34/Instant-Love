@@ -69,4 +69,26 @@ const actualizarPerfil = async (req, res) => {
   }
 };
 
-export { obtenerPerfil, actualizarPerfil };
+const eliminarPerfil = async (req, res) => {
+  try {
+    const userId = req.usuario.id;
+
+    const usuario = await User.findByPk(userId);
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado." });
+    }
+
+    await usuario.destroy({force: true});
+
+    res.status(200).json({ 
+      mensaje: "Cuenta eliminada correctamente." 
+    });
+
+  } catch (error) {
+    console.error("Error al eliminar la cuenta:", error);
+    res.status(500).json({ mensaje: "Hubo un error al intentar eliminar la cuenta." });
+  }
+};
+
+export { obtenerPerfil, actualizarPerfil,eliminarPerfil };

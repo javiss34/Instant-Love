@@ -31,7 +31,6 @@ const User = sequelize.define(
   },
   {
     timestamps: true, //Añade dos columnas en la tabla para la fecha de creación y la de la última modificación.
-    paranoid: true, //Añade otra columna en la tabla para la fecha del delete de un usuario.
     hooks: {
       beforeCreate: async (user) => {
         //10 es el factor de coste que indica a la cpu cuantas rondas de procesamiento debe aplicar(29 caracteres).
