@@ -20,14 +20,16 @@ User.hasOne(Subscription, {
 });
 Subscription.belongsTo(User, { foreignKey: "userId" });
 
-// 3. USER <-> CALLHISTORY (N:M Reflexiva)
+// 3. USER <-> CALLHISTORY (Dos relaciones 1:N)
 User.hasMany(CallHistory, {
-  foreignKey: { name: "user1Id", allowNull: false },
+  foreignKey: { name: "user1Id", allowNull: true },
   as: "Llamadas_realizadas",
+  onDelete: "SET NULL"
 });
 User.hasMany(CallHistory, {
-  foreignKey: { name: "user2Id", allowNull: false },
+  foreignKey: { name: "user2Id", allowNull: true },
   as: "Llamadas_recibidas",
+  onDelete: "SET NULL"
 });
 
 CallHistory.belongsTo(User, { foreignKey: "user1Id", as: "Emisor" });
@@ -42,12 +44,14 @@ Outcome.belongsTo(CallHistory, { foreignKey: "callId" });
 
 // 5. USER <-> REPORT (1:N Reflexiva)
 User.hasMany(Report, {
-  foreignKey: { name: "reporteroId", allowNull: false },
+  foreignKey: { name: "reporteroId", allowNull: true },
   as: "ReportesRealizados",
+  onDelete: "SET NULL"
 });
 User.hasMany(Report, {
-  foreignKey: { name: "acusadoId", allowNull: false },
+  foreignKey: { name: "acusadoId", allowNull: true },
   as: "QuejasRecibidas",
+  onDelete: "SET NULL"
 });
 
 Report.belongsTo(User, { foreignKey: "reporteroId", as: "Autor" });
