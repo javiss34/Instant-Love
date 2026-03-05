@@ -1,32 +1,40 @@
-import { Report } from "../models/index.js";
+import { Report, User, CallHistory } from "../models/index.js";
 
 const crearReporte = async (req, res) => {
   try {
-    const { reporteroId, acusadoId, callId, motivo } = req.body;
+    const reporteroId = req.usuario.id; 
 
-    if (!reporteroId || !acusadoId || !callId || !motivo) {
-      return res
-        .status(400)
-        .json({ mensaje: "Faltan datos para procesar el reporte" });
+    const { acusadoId, callId, motivo } = req.body;
+
+    if (reporteroId === acusadoId) {
+      return res.status(400).json({ mensaje: "No tiene sentido reportarte a ti mismo." });
+    }
+
+    if (callId) {
+      const llamada = await CallHistory.findByPk(callId);
+      if (!llamada || (llamada.user1Id !== reporteroId && llamada.user2Id !== reporteroId)) {
+        return res.status(403).json({ 
+          mensaje: "No puedes reportar un incidente de una llamada en la que no participaste." 
+        });
+      }
     }
 
     const nuevoReporte = await Report.create({
-      reporteroId,
-      acusadoId,
-      callId: callId || null,
-      motivo,
-      estado: "PENDIENTE",
+      reporteroId: reporteroId,
+      acusadoId: acusadoId,
+      callId: callId,
+      motivo: motivo,
+      estado: "PENDIENTE" 
     });
 
-    return res.status(201).json({
-      mensaje: "Reporte creado correctamente",
-      reporte: nuevoReporte,
+    res.status(201).json({
+      mensaje: "Reporte enviado correctamente. Nuestro equipo lo revisará pronto.",
+      reporte: nuevoReporte
     });
+
   } catch (error) {
     console.error("Error al crear el reporte:", error);
-    return res
-      .status(500)
-      .json({ mensaje: "Error al crear el reporte", error: error.message });
+    res.status(500).json({ mensaje: "Hubo un error al procesar tu reporte.", error: error.message });
   }
 };
 
