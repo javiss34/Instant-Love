@@ -7,7 +7,7 @@ import { verificarToken } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/iniciar", verificarToken, iniciarLlamada);
+router.post("/", verificarToken, iniciarLlamada);
 router.put("/finalizar/:id", verificarToken, finalizarLlamada);
 
 export default router;

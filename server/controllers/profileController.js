@@ -2,7 +2,7 @@ import { Profile, User } from "../models/index.js";
 
 const obtenerPerfil = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.usuario.id;
 
     const perfil = await Profile.findByPk(id, {
       include: {
@@ -18,22 +18,37 @@ const obtenerPerfil = async (req, res) => {
     res.status(200).json({ perfil });
   } catch (error) {
     console.error("Error al obtener el perfil:", error);
-    res
-      .status(500)
-      .json({ mensaje: "Error al obtener el perfil", error: error.message });
+    res.status(500).json({ mensaje: "Error al obtener el perfil", error: error.message });
+  }
+};
+
+const verPerfilPublico = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const perfil = await Profile.findByPk(id, {
+      include: {
+        model: User,
+        attributes: ["activo"], 
+      },
+    });
+
+    if (!perfil) {
+      return res.status(404).json({ mensaje: "Este perfil ya no está disponible." });
+    }
+
+    res.status(200).json({ perfil });
+
+  } catch (error) {
+    console.error("Error al obtener el perfil público:", error);
+    res.status(500).json({ mensaje: "Error al cargar el perfil del usuario.", error: error.message });
   }
 };
 
 const actualizarPerfil = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = req.usuario.id; 
     
-    if (req.usuario.id !== id) {
-      return res.status(403).json({
-        mensaje: "No puedes editar un perfil que no sea el tuyo",
-      });
-    }
-
     const {
       nombre,
       red_social_tipo,
@@ -48,7 +63,6 @@ const actualizarPerfil = async (req, res) => {
       return res.status(404).json({ mensaje: "Perfil no encontrado" });
     }
 
-    //Usamos || por si el usuario deja algún campo sin actualizar que se quede con el valor anterior
     await perfil.update({
       nombre: nombre || perfil.nombre,
       red_social_tipo: red_social_tipo || perfil.red_social_tipo,
@@ -63,9 +77,7 @@ const actualizarPerfil = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al actualizar el perfil:", error);
-    res
-      .status(500)
-      .json({ mensaje: "Error al actualizar el perfil", error: error.message });
+    res.status(500).json({ mensaje: "Error al actualizar el perfil", error: error.message });
   }
 };
 
@@ -79,10 +91,10 @@ const eliminarPerfil = async (req, res) => {
       return res.status(404).json({ mensaje: "Usuario no encontrado." });
     }
 
-    await usuario.destroy({force: true});
+    await usuario.destroy({ force: true });
 
-    res.status(200).json({ 
-      mensaje: "Cuenta eliminada correctamente." 
+    res.status(200).json({
+      mensaje: "Cuenta eliminada correctamente."
     });
 
   } catch (error) {
@@ -91,4 +103,4 @@ const eliminarPerfil = async (req, res) => {
   }
 };
 
-export { obtenerPerfil, actualizarPerfil,eliminarPerfil };
+export { obtenerPerfil, actualizarPerfil, eliminarPerfil,verPerfilPublico };
