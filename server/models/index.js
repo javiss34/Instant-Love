@@ -24,12 +24,12 @@ Subscription.belongsTo(User, { foreignKey: "userId" });
 User.hasMany(CallHistory, {
   foreignKey: { name: "user1Id", allowNull: true },
   as: "Llamadas_realizadas",
-  onDelete: "SET NULL"
+  onDelete: "SET NULL",
 });
 User.hasMany(CallHistory, {
   foreignKey: { name: "user2Id", allowNull: true },
   as: "Llamadas_recibidas",
-  onDelete: "SET NULL"
+  onDelete: "SET NULL",
 });
 
 CallHistory.belongsTo(User, { foreignKey: "user1Id", as: "Emisor" });
@@ -46,22 +46,18 @@ Outcome.belongsTo(CallHistory, { foreignKey: "callId" });
 User.hasMany(Report, {
   foreignKey: { name: "reporteroId", allowNull: true },
   as: "ReportesRealizados",
-  onDelete: "SET NULL"
+  onDelete: "SET NULL",
 });
 User.hasMany(Report, {
   foreignKey: { name: "acusadoId", allowNull: true },
   as: "QuejasRecibidas",
-  onDelete: "SET NULL"
+  onDelete: "SET NULL",
 });
 
 Report.belongsTo(User, { foreignKey: "reporteroId", as: "Autor" });
 Report.belongsTo(User, { foreignKey: "acusadoId", as: "Destino" });
 
-// ==========================================
 // 6. CALLHISTORY <-> REPORT (1:N)
-// Aquí NO ponemos allowNull: false, porque un reporte
-// podría hacerse desde el perfil sin haber habido llamada
-// ==========================================
 CallHistory.hasMany(Report, {
   foreignKey: "callId",
   onDelete: "SET NULL",

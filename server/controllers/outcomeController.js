@@ -3,9 +3,9 @@ import { Outcome, CallHistory, Profile } from "../models/index.js";
 const registrarVoto = async (req, res) => {
   try {
     const { callId } = req.params;
-    
-    const { voto } = req.body; 
-    const userId = req.usuario.id; 
+
+    const { voto } = req.body;
+    const userId = req.usuario.id;
 
     const outcome = await Outcome.findOne({
       where: { callId },
@@ -13,7 +13,9 @@ const registrarVoto = async (req, res) => {
     });
 
     if (!outcome) {
-      return res.status(404).json({ mensaje: "Registro de llamada no encontrado" });
+      return res
+        .status(404)
+        .json({ mensaje: "Registro de llamada no encontrado" });
     }
 
     const llamada = outcome.CallHistory;
@@ -26,7 +28,9 @@ const registrarVoto = async (req, res) => {
       outcome.voto_usuario2 = voto;
       otroUsuarioId = llamada.user1Id;
     } else {
-      return res.status(403).json({ mensaje: "No has participado en esta llamada" });
+      return res
+        .status(403)
+        .json({ mensaje: "No has participado en esta llamada" });
     }
 
     await outcome.save();
@@ -49,7 +53,9 @@ const registrarVoto = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al registrar el voto:", error);
-    return res.status(500).json({ mensaje: "Error al registrar el voto", error: error.message });
+    return res
+      .status(500)
+      .json({ mensaje: "Error al registrar el voto", error: error.message });
   }
 };
 
