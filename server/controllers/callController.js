@@ -2,11 +2,13 @@ import { CallHistory, Outcome } from "../models/index.js";
 
 const iniciarLlamada = async (req, res) => {
   try {
-    const user1Id = req.usuario.id; 
+    const user1Id = req.usuario.id;
     const { user2Id } = req.body;
 
     if (!user2Id) {
-      return res.status(400).json({ mensaje: "Faltan datos de usuario a llamar" });
+      return res
+        .status(400)
+        .json({ mensaje: "Faltan datos de usuario a llamar" });
     }
 
     const nuevaLlamada = await CallHistory.create({
@@ -24,7 +26,9 @@ const iniciarLlamada = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al iniciar la llamada:", error);
-    res.status(500).json({ mensaje: "Error al iniciar la llamada", error: error.message });
+    res
+      .status(500)
+      .json({ mensaje: "Error al iniciar la llamada", error: error.message });
   }
 };
 
@@ -32,9 +36,8 @@ const finalizarLlamada = async (req, res) => {
   try {
     const { id } = req.params;
     const { duracion, estado } = req.body;
-    
-    // ✅ Tienes que saber quién está intentando colgar
-    const miId = req.usuario.id; 
+
+    const miId = req.usuario.id;
 
     const llamada = await CallHistory.findByPk(id);
 
@@ -43,8 +46,9 @@ const finalizarLlamada = async (req, res) => {
     }
 
     if (llamada.user1Id !== miId && llamada.user2Id !== miId) {
-      return res.status(403).json({ 
-        mensaje: "¡Hackeo bloqueado! No puedes finalizar una llamada que no es tuya." 
+      return res.status(403).json({
+        mensaje:
+          "¡Hackeo bloqueado! No puedes finalizar una llamada que no es tuya.",
       });
     }
 
@@ -59,7 +63,9 @@ const finalizarLlamada = async (req, res) => {
     });
   } catch (error) {
     console.error("Error al finalizar la llamada:", error);
-    res.status(500).json({ mensaje: "Error al finalizar la llamada", error: error.message });
+    res
+      .status(500)
+      .json({ mensaje: "Error al finalizar la llamada", error: error.message });
   }
 };
 
