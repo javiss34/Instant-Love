@@ -9,7 +9,7 @@ import outcomeRoutes from "./routes/outcomeRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -22,7 +22,7 @@ app.use("/api/reportes", reportRoutes);
 
 const iniciarServidor = async () => {
   await conectarDB();
-  await sequelize.sync({ force: true });
+  await sequelize.sync({ alter: true });
   console.log("Modelos sincronizados con instantlovedb");
   app.listen(PORT, () => {
     console.log(
