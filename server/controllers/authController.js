@@ -19,7 +19,7 @@ const registrarUsuario = async (req, res) => {
     const usuarioExistente = await User.findOne({ where: { email } });
     if (usuarioExistente) {
       await transaccion.rollback();
-      return res.status(400).json({ message: "El email ya está registrado" });
+      return res.status(400).json({ mensaje: "El email ya está registrado" });
     }
 
     const nuevoUsuario = await User.create(
@@ -47,7 +47,7 @@ const registrarUsuario = async (req, res) => {
 
     const token = jwt.sign(
       { id: nuevoUsuario.id, rol: nuevoUsuario.rol },
-      process.env.JWT_SECRET || "clave_secreta_instant_love",
+      process.env.JWT_SECRET,
       { expiresIn: "14d" },
     );
 
@@ -63,7 +63,7 @@ const registrarUsuario = async (req, res) => {
   } catch (error) {
     await transaccion.rollback();
     console.error("Error en el registro de usuario:", error);
-    res.status(500).json({ message: "Error al registrar el usuario", error });
+    res.status(500).json({ mensaje: "Error al registrar el usuario", error: error.message });
   }
 };
 
@@ -73,23 +73,23 @@ const loginUsuario = async (req, res) => {
 
     const usuario = await User.findOne({ where: { email } });
     if (!usuario) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+      return res.status(401).json({ mensaje: "Credenciales incorrectas" });
     }
 
     if (!usuario.activo) {
       return res
         .status(403)
-        .json({ message: "Esta cuenta ha sido desactivada" });
+        .json({ mensaje: "Esta cuenta ha sido desactivada" });
     }
 
     const passwordCorrecta = await bcrypt.compare(password, usuario.password);
     if (!passwordCorrecta) {
-      return res.status(401).json({ message: "Contraseña incorrecta" });
+      return res.status(401).json({ mensaje: "Credenciales incorrectas" });
     }
 
     const token = jwt.sign(
       { id: usuario.id, rol: usuario.rol },
-      process.env.JWT_SECRET || "clave_secreta_instant_love",
+      process.env.JWT_SECRET,
       { expiresIn: "14d" },
     );
 
@@ -106,7 +106,7 @@ const loginUsuario = async (req, res) => {
     console.error("Error en el login de usuario:", error);
     res
       .status(500)
-      .json({ message: "Error al iniciar sesión", error: error.message });
+      .json({ mensaje: "Error al iniciar sesión", error: error.message });
   }
 };
 

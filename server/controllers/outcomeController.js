@@ -22,9 +22,15 @@ const registrarVoto = async (req, res) => {
     let otroUsuarioId = null;
 
     if (llamada.user1Id === userId) {
+      if (outcome.voto_usuario1 !== "PENDIENTE") {
+        return res.status(409).json({ mensaje: "Ya has emitido tu voto para esta llamada." });
+      }
       outcome.voto_usuario1 = voto;
       otroUsuarioId = llamada.user2Id;
     } else if (llamada.user2Id === userId) {
+      if (outcome.voto_usuario2 !== "PENDIENTE") {
+        return res.status(409).json({ mensaje: "Ya has emitido tu voto para esta llamada." });
+      }
       outcome.voto_usuario2 = voto;
       otroUsuarioId = llamada.user1Id;
     } else {
