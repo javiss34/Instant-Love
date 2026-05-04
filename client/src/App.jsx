@@ -1,27 +1,15 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import "./App.css";
+import { ProveedorSesion } from "./context/ProveedorSesion.jsx";
+import Header from "./components/layout/Header.jsx";
+import Footer from "./components/layout/Footer.jsx";
+import Rutas from "./routes/Rutas.jsx";
 
 function App() {
-  const [mensaje, setMensaje] = useState("");
-
-  const obtenerSaludo = async () => {
-    try {
-      const respuesta = await axios.get("http://localhost:3000/api/saludo");
-        setMensaje(respuesta.data.mensaje);
-    } catch (error) {
-      setMensaje("Error al conectar con el servidor");
-    }
-  };
-
-  useEffect(() => {
-    obtenerSaludo();
-  }, []);
-
   return (
-    <>
-      <h1>{mensaje}</h1>
-    </>
+    <ProveedorSesion>
+      <Header />
+      <Rutas />
+      <Footer />
+    </ProveedorSesion>
   );
 }
 
