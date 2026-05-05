@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { obtenerMiPerfil } from "../services/profileService.js";
 import BotonPrimario from "../components/ui/BotonPrimario.jsx";
 
+const FOTO_HERO = "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1920&q=80";
+
 const Inicio = () => {
   const [perfil, setPerfil] = useState(null);
   const [error, setError] = useState(null);
@@ -47,33 +49,48 @@ const Inicio = () => {
   }
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-rose-50 via-orange-50/50 to-amber-50">
+    <div className="flex-1">
 
-      <section className="max-w-7xl mx-auto px-8 pt-20 pb-16 flex flex-col items-center text-center gap-6">
+      {/* Hero — ocupa todo el viewport, sube detrás del header transparente */}
+      <div className="relative -mt-[60px] min-h-screen flex items-center justify-center overflow-hidden">
 
-        <span className="text-6xl">💘</span>
+        {/* Foto de fondo */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url('${FOTO_HERO}')` }}
+        />
 
-        <div className="flex flex-col gap-3">
-          <h1 className="text-5xl font-extrabold text-gray-900 leading-tight tracking-tight">
-            ¡Bienvenido,{" "}
-            <span className="bg-gradient-to-r from-rose-500 to-orange-400 bg-clip-text text-transparent">
-              {perfil.nombre}
-            </span>
-            !
-          </h1>
-          <p className="text-lg text-gray-400 max-w-lg leading-relaxed font-medium">
-            Tu próxima conexión especial está a solo un clic de distancia.
-          </p>
+        {/* Overlay con los colores de la marca */}
+        <div className="absolute inset-0 bg-gradient-to-br from-rose-900/65 via-rose-600/45 to-orange-400/35" />
+
+        {/* Contenido centrado */}
+        <div className="relative z-10 flex flex-col items-center text-center gap-7 px-8 pt-[60px]">
+
+          <span className="text-7xl drop-shadow-lg">💘</span>
+
+          <div className="flex flex-col gap-4">
+            <h1 className="text-6xl font-extrabold text-white leading-tight tracking-tight drop-shadow-lg">
+              ¡Bienvenido,{" "}
+              <span className="text-orange-300">
+                {perfil.nombre}
+              </span>
+              !
+            </h1>
+            <p className="text-xl text-white/80 max-w-lg leading-relaxed font-medium drop-shadow">
+              Tu próxima conexión especial está a solo un clic de distancia.
+            </p>
+          </div>
+
+          <button
+            onClick={() => navegar("/sala-espera")}
+            className="bg-white text-rose-500 hover:bg-rose-50 font-semibold px-6 py-2.5 rounded-xl shadow-lg transition-colors text-sm"
+          >
+            💞 Buscar Cita
+          </button>
+
         </div>
 
-        <button
-          onClick={() => navegar("/sala-espera")}
-          className="bg-gradient-to-r from-rose-500 to-orange-400 hover:from-rose-600 hover:to-orange-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-md transition-colors"
-        >
-          💞 Buscar Cita
-        </button>
-
-      </section>
+      </div>
 
     </div>
   );
