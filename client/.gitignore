@@ -23,7 +23,4 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
-
-CLAUDE.md
-diario_tfg.md
+*.sw?s
