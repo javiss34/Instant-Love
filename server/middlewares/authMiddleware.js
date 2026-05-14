@@ -1,5 +1,9 @@
 import jwt from "jsonwebtoken";
 
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET no está definido en las variables de entorno.");
+}
+
 const verificarToken = (req, res, next) => {
   try {
     let token = req.headers.authorization;
@@ -14,10 +18,7 @@ const verificarToken = (req, res, next) => {
       token = token.slice(7, token.length);
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "clave_secreta_instant_love",
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     req.usuario = decoded;
 

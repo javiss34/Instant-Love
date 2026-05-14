@@ -13,6 +13,11 @@ const sequelize = new Sequelize(
     dialect: "mysql",
     port: process.env.DB_PORT || 3306,
     logging: false,
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
   },
 );
 
@@ -22,6 +27,7 @@ const conectarDB = async () => {
     console.log("Conexión establecida correctamente");
   } catch (error) {
     console.error("No se puede conectar a la base de datos:", error);
+    process.exit(1);
   }
 };
 
