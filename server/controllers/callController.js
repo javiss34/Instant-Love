@@ -6,6 +6,7 @@ import {
   guardarResultado,
   obtenerResultado,
   eliminarResultado,
+  obtenerCola,
 } from "../utils/colaEspera.js";
 
 const iniciarLlamada = async (req, res) => {
@@ -100,8 +101,10 @@ const unirseAColaBusqueda = async (req, res) => {
     };
 
     unirseACola(usuarioEnCola);
+    console.log(`[COLA] Usuario ${userId} unido. Cola actual:`, obtenerCola());
 
     const pareja = buscarPareja(usuarioEnCola);
+    console.log(`[COLA] Pareja encontrada para ${userId}:`, pareja ? `id:${pareja.userId}` : "ninguna");
 
     if (pareja) {
       // Sacar a ambos de la cola antes de crear la llamada

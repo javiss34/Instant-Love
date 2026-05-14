@@ -12,6 +12,7 @@ const Llamada = () => {
   const contenedorRef = useRef(null);
   const frameRef = useRef(null);
   const [colgando, setColgando] = useState(false);
+  const [avisoCamara, setAvisoCamara] = useState(false);
 
   useEffect(() => {
     const frame = DailyIframe.createFrame(contenedorRef.current, {
@@ -21,10 +22,18 @@ const Llamada = () => {
     });
 
     frameRef.current = frame;
-    frame.join({ url: URL_SALA_DAILY });
+
+    frame.on("camera-error", () => {
+      setAvisoCamara(true);
+    });
+
+    frame.join({ url: URL_SALA_DAILY }).catch(() => {
+      setAvisoCamara(true);
+    });
 
     return () => {
       if (frameRef.current) {
+        frameRef.current.off("camera-error");
         frameRef.current
           .leave()
           .catch(() => {})
@@ -52,6 +61,12 @@ const Llamada = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-between py-8 px-4 gap-6">
+
+      {avisoCamara && (
+        <div className="w-full max-w-4xl bg-yellow-500 text-yellow-900 text-sm font-medium rounded-xl px-4 py-3 text-center">
+          No se ha podido acceder a la cámara o micrófono. Puedes seguir en la llamada en modo solo audio/texto.
+        </div>
+      )}
 
       <div className="w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
         <div ref={contenedorRef} className="w-full h-full" />

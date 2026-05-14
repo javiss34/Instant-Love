@@ -46,6 +46,8 @@ const eliminarResultado = (userId) => {
   resultados.delete(userId);
 };
 
+const obtenerCola = () => cola.map(u => `id:${u.userId} g:${u.genero} p:${u.preferencia_genero}`);
+
 export {
   buscarPareja,
   unirseACola,
@@ -53,4 +55,5 @@ export {
   guardarResultado,
   obtenerResultado,
   eliminarResultado,
+  obtenerCola,
 };

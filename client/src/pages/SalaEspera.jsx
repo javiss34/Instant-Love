@@ -14,8 +14,15 @@ const SalaEspera = () => {
 
     const iniciarBusqueda = async () => {
       try {
-        await unirseColaBusqueda();
+        const resultado = await unirseColaBusqueda();
 
+        // Si el propio POST ya devuelve un match (somos el segundo en unirse), navegamos directamente
+        if (resultado.llamadaId) {
+          navegar(`/llamada/${resultado.llamadaId}`);
+          return;
+        }
+
+        // Si no hay match aún, empezamos a hacer polling
         intervalo = setInterval(async () => {
           try {
             const estado = await comprobarColaBusqueda();
