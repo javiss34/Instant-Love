@@ -9,7 +9,7 @@ import outcomeRoutes from "./routes/outcomeRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 app.use(
   cors({
