@@ -1,12 +1,20 @@
 import { useState, useEffect } from "react";
-import { obtenerMiPerfil, actualizarPerfil } from "../services/profileService.js";
+import {
+  obtenerMiPerfil,
+  actualizarPerfil,
+} from "../services/profileService.js";
 import InputFormulario from "./ui/InputFormulario.jsx";
 import SelectFormulario from "./ui/SelectFormulario.jsx";
 import BotonPrimario from "./ui/BotonPrimario.jsx";
 
 const etiquetaGenero = { H: "Hombre", M: "Mujer", O: "Otro" };
 const etiquetaPreferencia = { H: "Hombres", M: "Mujeres", AMBOS: "Ambos" };
-const etiquetaRedSocial = { INSTAGRAM: "Instagram", WHATSAPP: "WhatsApp", "TIK TOK": "TikTok", OTRO: "Otro" };
+const etiquetaRedSocial = {
+  INSTAGRAM: "Instagram",
+  WHATSAPP: "WhatsApp",
+  "TIK TOK": "TikTok",
+  OTRO: "Otro",
+};
 
 const FormularioPerfil = () => {
   const [perfil, setPerfil] = useState(null);
@@ -76,7 +84,9 @@ const FormularioPerfil = () => {
   if (cargando) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-rose-400 text-lg animate-pulse">Cargando perfil...</p>
+        <p className="text-rose-400 text-lg animate-pulse">
+          Cargando perfil...
+        </p>
       </div>
     );
   }
@@ -93,21 +103,26 @@ const FormularioPerfil = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 w-full">
-
       {/* Cabecera del perfil */}
       <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-8 mb-6 flex flex-col sm:flex-row items-center gap-6">
         <div className="w-24 h-24 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-4xl font-bold shadow-md shrink-0">
           {inicial}
         </div>
         <div className="text-center sm:text-left flex-1">
-          <h1 className="text-3xl font-extrabold text-gray-800">{perfil.nombre}</h1>
+          <h1 className="text-3xl font-extrabold text-gray-800">
+            {perfil.nombre}
+          </h1>
           <p className="text-gray-400 mt-1">{perfil.User?.email}</p>
           <span className="inline-block mt-2 text-xs font-semibold uppercase tracking-wide bg-rose-100 text-rose-600 px-3 py-1 rounded-full">
             {perfil.User?.rol === "admin" ? "Administrador" : "Usuario"}
           </span>
         </div>
         {!modoEdicion && (
-          <BotonPrimario onClick={() => setModoEdicion(true)} variante="secundario" className="shrink-0">
+          <BotonPrimario
+            onClick={() => setModoEdicion(true)}
+            variante="secundario"
+            className="!w-auto shrink-0 px-6"
+          >
             ✏️ Editar perfil
           </BotonPrimario>
         )}
@@ -132,13 +147,21 @@ const FormularioPerfil = () => {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="bg-rose-50 rounded-2xl p-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Género</p>
-            <p className="text-gray-800 font-semibold">{etiquetaGenero[perfil.genero] ?? "—"}</p>
+            <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
+              Género
+            </p>
+            <p className="text-gray-800 font-semibold">
+              {etiquetaGenero[perfil.genero] ?? "—"}
+            </p>
           </div>
           <div className="bg-orange-50 rounded-2xl p-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Fecha de nacimiento</p>
+            <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
+              Fecha de nacimiento
+            </p>
             <p className="text-gray-800 font-semibold">
-              {perfil.fecha_nacimiento ? new Date(perfil.fecha_nacimiento).toLocaleDateString("es-ES") : "—"}
+              {perfil.fecha_nacimiento
+                ? new Date(perfil.fecha_nacimiento).toLocaleDateString("es-ES")
+                : "—"}
             </p>
           </div>
         </div>
@@ -196,10 +219,19 @@ const FormularioPerfil = () => {
             />
 
             <div className="flex gap-3 pt-2">
-              <BotonPrimario type="submit" disabled={guardando} className="flex-1">
+              <BotonPrimario
+                type="submit"
+                disabled={guardando}
+                className="flex-1"
+              >
                 {guardando ? "Guardando..." : "💾 Guardar cambios"}
               </BotonPrimario>
-              <BotonPrimario type="button" onClick={handleCancelar} variante="secundario" className="flex-1">
+              <BotonPrimario
+                type="button"
+                onClick={handleCancelar}
+                variante="secundario"
+                className="flex-1"
+              >
                 Cancelar
               </BotonPrimario>
             </div>
@@ -207,23 +239,34 @@ const FormularioPerfil = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-pink-50 rounded-2xl p-4">
-              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Me interesan</p>
-              <p className="text-gray-800 font-semibold">{etiquetaPreferencia[perfil.preferencia_genero] ?? "—"}</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
+                Me interesan
+              </p>
+              <p className="text-gray-800 font-semibold">
+                {etiquetaPreferencia[perfil.preferencia_genero] ?? "—"}
+              </p>
             </div>
             <div className="bg-rose-50 rounded-2xl p-4">
-              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Red social</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
+                Red social
+              </p>
               <p className="text-gray-800 font-semibold">
-                {perfil.red_social_tipo ? etiquetaRedSocial[perfil.red_social_tipo] : "—"}
+                {perfil.red_social_tipo
+                  ? etiquetaRedSocial[perfil.red_social_tipo]
+                  : "—"}
               </p>
             </div>
             <div className="bg-orange-50 rounded-2xl p-4 sm:col-span-2">
-              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">Usuario / número</p>
-              <p className="text-gray-800 font-semibold">{perfil.red_social_usuario || "—"}</p>
+              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
+                Usuario / número
+              </p>
+              <p className="text-gray-800 font-semibold">
+                {perfil.red_social_usuario || "—"}
+              </p>
             </div>
           </div>
         )}
       </div>
-
     </div>
   );
 };
