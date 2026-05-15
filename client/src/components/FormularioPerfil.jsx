@@ -107,7 +107,7 @@ const FormularioPerfil = () => {
           </span>
         </div>
         {!modoEdicion && (
-          <BotonPrimario onClick={() => setModoEdicion(true)} variante="secundario" className="shrink-0">
+          <BotonPrimario onClick={() => setModoEdicion(true)} variante="secundario" className="shrink-0 px-6">
             ✏️ Editar perfil
           </BotonPrimario>
         )}
