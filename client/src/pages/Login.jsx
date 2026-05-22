@@ -1,6 +1,14 @@
+import { Navigate } from "react-router-dom";
+import useSesion from "../hooks/useSesion.js";
 import FormularioLogin from "../components/FormularioLogin.jsx";
 
 const Login = () => {
+  const { sesionIniciada } = useSesion();
+
+  if (sesionIniciada) {
+    return <Navigate to="/inicio" replace />;
+  }
+
   return (
     <div
       className="flex-1 flex items-center justify-center px-4"

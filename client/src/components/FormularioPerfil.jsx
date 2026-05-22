@@ -107,7 +107,7 @@ const FormularioPerfil = () => {
           </h1>
           <p className="text-gray-400 mt-1">{perfilPropio.User?.email}</p>
           <span className="inline-block mt-2 text-xs font-semibold uppercase tracking-wide bg-rose-100 text-rose-600 px-3 py-1 rounded-full">
-            {perfilPropio.User?.rol === "admin" ? "Administrador" : "Usuario"}
+            {perfilPropio.User?.rol === "ADMIN" ? "Administrador" : "Usuario"}
           </span>
         </div>
         {!modoEdicion && (
