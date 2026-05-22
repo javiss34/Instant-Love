@@ -1,15 +1,15 @@
-import { ProveedorSesion } from "./context/ProveedorSesion.jsx";
+import { ProveedorAuth } from "./context/ProveedorAuth.jsx";
 import Header from "./components/layout/Header.jsx";
 import Footer from "./components/layout/Footer.jsx";
 import Rutas from "./routes/Rutas.jsx";
 
 function App() {
   return (
-    <ProveedorSesion>
+    <ProveedorAuth>
       <Header />
       <Rutas />
       <Footer />
-    </ProveedorSesion>
+    </ProveedorAuth>
   );
 }
 

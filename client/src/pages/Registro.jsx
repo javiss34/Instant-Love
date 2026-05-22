@@ -1,38 +1,38 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { registrarUsuario } from "../services/authService.js";
+import { Link } from "react-router-dom";
+import useAuth from "../hooks/useAuth.js";
 import InputFormulario from "../components/ui/InputFormulario.jsx";
 import SelectFormulario from "../components/ui/SelectFormulario.jsx";
 import BotonPrimario from "../components/ui/BotonPrimario.jsx";
 import logo from "../assets/logo-instant-love.png";
 
+const registroInicial = {
+  username: "",
+  nombre: "",
+  email: "",
+  password: "",
+  fecha_nacimiento: "",
+  genero: "",
+  preferencia_genero: "",
+};
+
 const Registro = () => {
-  const [nombre, setNombre] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fechaNacimiento, setFechaNacimiento] = useState("");
-  const [genero, setGenero] = useState("");
-  const [preferenciaGenero, setPreferenciaGenero] = useState("");
+  const [formData, setFormData] = useState(registroInicial);
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(false);
 
-  const navegar = useNavigate();
+  const { registro } = useAuth();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setCargando(true);
-
     try {
-      await registrarUsuario({
-        nombre,
-        email,
-        password,
-        fecha_nacimiento: fechaNacimiento,
-        genero,
-        preferencia_genero: preferenciaGenero,
-      });
-      navegar("/login");
+      await registro(formData);
     } catch (err) {
       if (err.name === "ZodError") {
         setError(err.errors[0].message);
@@ -64,11 +64,21 @@ const Registro = () => {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <InputFormulario
+            id="username"
+            label="Nombre de usuario"
+            type="text"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="ej: juan_lopez"
+            required
+          />
+
+          <InputFormulario
             id="nombre"
             label="Nombre"
             type="text"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            value={formData.nombre}
+            onChange={handleChange}
             placeholder="Tu nombre"
             required
           />
@@ -77,8 +87,8 @@ const Registro = () => {
             id="email"
             label="Email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleChange}
             placeholder="tu@email.com"
             required
           />
@@ -87,26 +97,26 @@ const Registro = () => {
             id="password"
             label="Contraseña"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Mínimo 6 caracteres"
             required
           />
 
           <InputFormulario
-            id="fechaNacimiento"
+            id="fecha_nacimiento"
             label="Fecha de nacimiento"
             type="date"
-            value={fechaNacimiento}
-            onChange={(e) => setFechaNacimiento(e.target.value)}
+            value={formData.fecha_nacimiento}
+            onChange={handleChange}
             required
           />
 
           <SelectFormulario
             id="genero"
             label="Género"
-            value={genero}
-            onChange={(e) => setGenero(e.target.value)}
+            value={formData.genero}
+            onChange={handleChange}
             required
           >
             <option value="">Selecciona una opción</option>
@@ -116,10 +126,10 @@ const Registro = () => {
           </SelectFormulario>
 
           <SelectFormulario
-            id="preferenciaGenero"
+            id="preferencia_genero"
             label="Me interesan"
-            value={preferenciaGenero}
-            onChange={(e) => setPreferenciaGenero(e.target.value)}
+            value={formData.preferencia_genero}
+            onChange={handleChange}
             required
           >
             <option value="">Selecciona una opción</option>

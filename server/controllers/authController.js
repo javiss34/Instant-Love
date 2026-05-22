@@ -8,6 +8,7 @@ const registrarUsuario = async (req, res) => {
 
   try {
     const {
+      username,
       email,
       password,
       nombre,
@@ -22,8 +23,14 @@ const registrarUsuario = async (req, res) => {
       return res.status(400).json({ mensaje: "El email ya está registrado" });
     }
 
+    const usernameExistente = await User.findOne({ where: { username } });
+    if (usernameExistente) {
+      await transaccion.rollback();
+      return res.status(400).json({ mensaje: "El nombre de usuario ya está en uso" });
+    }
+
     const nuevoUsuario = await User.create(
-      { email, password },
+      { username, email, password },
       { transaction: transaccion },
     );
 
@@ -56,6 +63,7 @@ const registrarUsuario = async (req, res) => {
       token: token,
       usuario: {
         id: nuevoUsuario.id,
+        username: nuevoUsuario.username,
         email: nuevoUsuario.email,
         rol: nuevoUsuario.rol,
       },
@@ -98,6 +106,7 @@ const loginUsuario = async (req, res) => {
       token: token,
       usuario: {
         id: usuario.id,
+        username: usuario.username,
         email: usuario.email,
         rol: usuario.rol,
       },

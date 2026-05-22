@@ -1,86 +1,38 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import DailyIframe from "@daily-co/daily-js";
-import { finalizarLlamada } from "../services/callService.js";
-import BotonPrimario from "../components/ui/BotonPrimario.jsx";
-
-const URL_SALA_DAILY = import.meta.env.VITE_DAILY_ROOM_URL;
+import useLlamada from "../hooks/useLlamada.js";
 
 const Llamada = () => {
-  const { id } = useParams();
-  const navegar = useNavigate();
-  const contenedorRef = useRef(null);
-  const frameRef = useRef(null);
-  const [colgando, setColgando] = useState(false);
-  const [avisoCamara, setAvisoCamara] = useState(false);
-
-  useEffect(() => {
-    const frame = DailyIframe.createFrame(contenedorRef.current, {
-      iframeStyle: { width: "100%", height: "100%", border: "none" },
-      showLeaveButton: false,
-      showFullscreenButton: true,
-    });
-
-    frameRef.current = frame;
-
-    frame.on("camera-error", () => {
-      setAvisoCamara(true);
-    });
-
-    frame.join({ url: URL_SALA_DAILY }).catch(() => {
-      setAvisoCamara(true);
-    });
-
-    return () => {
-      if (frameRef.current) {
-        frameRef.current.off("camera-error");
-        frameRef.current
-          .leave()
-          .catch(() => {})
-          .finally(() => {
-            frameRef.current.destroy();
-            frameRef.current = null;
-          });
-      }
-    };
-  }, []);
-
-  const handleColgar = async () => {
-    setColgando(true);
-    try {
-      if (frameRef.current) {
-        await frameRef.current.leave();
-      }
-      await finalizarLlamada(id, 0, "COMPLETADA");
-    } catch {
-      // Si falla algo, navegamos igualmente para no dejar al usuario atrapado
-    } finally {
-      navegar(`/votacion/${id}`);
-    }
-  };
+  const { contenedorRef, colgando, avisoCamara, colgar, siguiente } = useLlamada();
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-between py-8 px-4 gap-6">
+    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center py-8 px-4 gap-4">
 
       {avisoCamara && (
         <div className="w-full max-w-4xl bg-yellow-500 text-yellow-900 text-sm font-medium rounded-xl px-4 py-3 text-center">
-          No se ha podido acceder a la cámara o micrófono. Puedes seguir en la llamada en modo solo audio/texto.
+          No se ha podido acceder a la cámara o micrófono. Puedes seguir en la llamada en modo solo texto.
         </div>
       )}
 
-      <div className="w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
-        <div ref={contenedorRef} className="w-full h-full" />
-      </div>
+      <div className="relative w-full max-w-4xl">
+        <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
+          <div ref={contenedorRef} className="w-full h-full" />
+        </div>
 
-      <div className="flex justify-center">
-        <BotonPrimario
-          onClick={handleColgar}
-          disabled={colgando}
-          variante="peligro"
-          className="w-auto px-12 py-4 text-lg"
-        >
-          {colgando ? "Colgando..." : "📵 Colgar"}
-        </BotonPrimario>
+        <div className="absolute bottom-5 left-0 right-0 flex justify-center gap-4">
+          <button
+            onClick={siguiente}
+            disabled={colgando}
+            className="bg-white text-gray-800 font-semibold px-8 py-3 rounded-xl shadow-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Siguiente ⏭️
+          </button>
+          <button
+            onClick={colgar}
+            disabled={colgando}
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {colgando ? "Colgando..." : "📵 Colgar"}
+          </button>
+        </div>
       </div>
 
     </div>

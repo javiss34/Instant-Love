@@ -7,6 +7,11 @@ const esquemaLogin = z.object({
 });
 
 const esquemaRegistro = z.object({
+  username: z
+    .string()
+    .min(3, "El username debe tener al menos 3 caracteres")
+    .max(30, "El username no puede superar los 30 caracteres")
+    .regex(/^[a-zA-Z0-9_]+$/, "El username solo puede contener letras, números y guiones bajos"),
   email: z.string().email("El email no tiene un formato válido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
   nombre: z

@@ -1,29 +1,29 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { iniciarSesion } from "../services/authService.js";
-import useSesion from "../hooks/useSesion.js";
+import { Link } from "react-router-dom";
+import useAuth from "../hooks/useAuth.js";
 import InputFormulario from "../components/ui/InputFormulario.jsx";
 import BotonPrimario from "../components/ui/BotonPrimario.jsx";
 import logo from "../assets/logo-instant-love.png";
 
+const loginInicial = { email: "", password: "" };
+
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState(loginInicial);
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(false);
 
-  const { guardarSesion } = useSesion();
-  const navegar = useNavigate();
+  const { login } = useAuth();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setCargando(true);
-
     try {
-      const datos = await iniciarSesion(email, password);
-      guardarSesion(datos.usuario, datos.token);
-      navegar("/inicio");
+      await login(formData);
     } catch (err) {
       if (err.name === "ZodError") {
         setError(err.errors[0].message);
@@ -58,8 +58,8 @@ const Login = () => {
             id="email"
             label="Email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleChange}
             placeholder="tu@email.com"
             required
           />
@@ -68,8 +68,8 @@ const Login = () => {
             id="password"
             label="Contraseña"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleChange}
             placeholder="••••••••"
             required
           />

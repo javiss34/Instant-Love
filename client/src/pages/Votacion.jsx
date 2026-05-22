@@ -12,6 +12,14 @@ const Votacion = () => {
   const [error, setError] = useState(null);
   const [votando, setVotando] = useState(false);
 
+  if (!id) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-100 via-pink-50 to-orange-50">
+        <p className="text-gray-500">Cargando votación...</p>
+      </div>
+    );
+  }
+
   const handleVoto = async (voto) => {
     setError(null);
     setVotando(true);
