@@ -15,9 +15,16 @@ const buscarPorId = (id) => Profile.findByPk(id);
 const crear = (datos, transaccion) =>
   Profile.create(datos, { transaction: transaccion });
 
+const actualizarPorId = async (id, campos) => {
+  const [filas] = await Profile.update(campos, { where: { id } });
+  if (filas === 0) return null;
+  return buscarPorIdConUsuario(id);
+};
+
 export default {
   buscarPorIdConUsuario,
   buscarPorIdConActivo,
   buscarPorId,
   crear,
+  actualizarPorId,
 };
