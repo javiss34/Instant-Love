@@ -64,8 +64,13 @@ const ProveedorVideollamada = ({ children }) => {
     }
   };
 
-  const colgar = (idLlamada) => finalizarYNavegar(idLlamada, `/votacion/${idLlamada}`);
+  const colgar = (idLlamada) =>
+    finalizarYNavegar(idLlamada, `/votacion/${idLlamada}`);
   const siguiente = (idLlamada) => finalizarYNavegar(idLlamada, "/sala-espera");
+
+  const votar = async (idLlamada, voto) => {
+    return await ejecutar(apiClient.put(`/voto/${idLlamada}`, { voto }));
+  };
 
   const datosAProveer = {
     avisoCamara,
@@ -74,6 +79,7 @@ const ProveedorVideollamada = ({ children }) => {
     salir,
     colgar,
     siguiente,
+    votar,
   };
 
   return (
