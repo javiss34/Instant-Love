@@ -2,14 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import DailyIframe from "@daily-co/daily-js";
 import { finalizarLlamada } from "../services/callService.js";
-import useAuth from "./useAuth.js";
+import useSesion from "./useSesion.js";
 
 const URL_SALA_DAILY = import.meta.env.VITE_DAILY_ROOM_URL;
 
 const useLlamada = () => {
   const { id } = useParams();
   const navegar = useNavigate();
-  const { usuario } = useAuth();
+  const { usuario } = useSesion();
   const contenedorRef = useRef(null);
   const frameRef = useRef(null);
   const [colgando, setColgando] = useState(false);
