@@ -7,20 +7,65 @@ import MiPerfil from "../pages/MiPerfil.jsx";
 import SalaEspera from "../pages/SalaEspera.jsx";
 import Llamada from "../pages/Llamada.jsx";
 import Votacion from "../pages/Votacion.jsx";
+import RutaPrivada from "./RutaPrivada.jsx";
 
 const Rutas = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Navigate to="/inicio" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/registro" element={<Registro />} />
-      <Route path="/inicio" element={<Inicio/>} />
-      <Route path="/estadisticas" element={<Estadisticas/>} />
-      <Route path="/mi-perfil" element={<MiPerfil/>} />
-      <Route path="/sala-espera" element={<SalaEspera/>} />
-      <Route path="/llamada/:id" element={<Llamada/>} />
-      <Route path="/votacion/:id" element={<Votacion/>} />
+
+      <Route
+        path="/inicio"
+        element={
+          <RutaPrivada>
+            <Inicio />
+          </RutaPrivada>
+        }
+      />
+      <Route
+        path="/estadisticas"
+        element={
+          <RutaPrivada>
+            <Estadisticas />
+          </RutaPrivada>
+        }
+      />
+      <Route
+        path="/mi-perfil"
+        element={
+          <RutaPrivada>
+            <MiPerfil />
+          </RutaPrivada>
+        }
+      />
+      <Route
+        path="/sala-espera"
+        element={
+          <RutaPrivada>
+            <SalaEspera />
+          </RutaPrivada>
+        }
+      />
+      <Route
+        path="/llamada/:id"
+        element={
+          <RutaPrivada>
+            <Llamada />
+          </RutaPrivada>
+        }
+      />
+      <Route
+        path="/votacion/:id"
+        element={
+          <RutaPrivada>
+            <Votacion />
+          </RutaPrivada>
+        }
+      />
     </Routes>
   );
 };
+
 export default Rutas;
