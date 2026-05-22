@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  obtenerMiPerfil,
-  actualizarPerfil,
-} from "../services/profileService.js";
+import usePerfiles from "../hooks/usePerfiles.js";
 import InputFormulario from "./ui/InputFormulario.jsx";
 import SelectFormulario from "./ui/SelectFormulario.jsx";
 import BotonPrimario from "./ui/BotonPrimario.jsx";
@@ -16,72 +13,76 @@ const etiquetaRedSocial = {
   OTRO: "Otro",
 };
 
-const FormularioPerfil = () => {
-  const [perfil, setPerfil] = useState(null);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState(null);
-  const [modoEdicion, setModoEdicion] = useState(false);
-  const [guardando, setGuardando] = useState(false);
-  const [exito, setExito] = useState(false);
+const datosPerfilInicial = {
+  nombre: "",
+  preferencia_genero: "",
+  red_social_tipo: "",
+  red_social_usuario: "",
+};
 
-  const [nombre, setNombre] = useState("");
-  const [preferenciaGenero, setPreferenciaGenero] = useState("");
-  const [redSocialTipo, setRedSocialTipo] = useState("");
-  const [redSocialUsuario, setRedSocialUsuario] = useState("");
+const FormularioPerfil = () => {
+  const { perfilPropio, actualizarPerfilPropio, cargando, error } = usePerfiles();
+  const [datos, setDatos] = useState(datosPerfilInicial);
+  const [modoEdicion, setModoEdicion] = useState(false);
+  const [mensajeError, setMensajeError] = useState(null);
+  const [mensajeExito, setMensajeExito] = useState(false);
 
   useEffect(() => {
-    const cargarPerfil = async () => {
-      try {
-        const datos = await obtenerMiPerfil();
-        setPerfil(datos);
-        setNombre(datos.nombre || "");
-        setPreferenciaGenero(datos.preferencia_genero || "");
-        setRedSocialTipo(datos.red_social_tipo || "");
-        setRedSocialUsuario(datos.red_social_usuario || "");
-      } catch {
-        setError("No se pudo cargar el perfil.");
-      } finally {
-        setCargando(false);
-      }
-    };
-
-    cargarPerfil();
-  }, []);
-
-  const handleGuardar = async (e) => {
-    e.preventDefault();
-    setGuardando(true);
-    setError(null);
-    setExito(false);
-
-    try {
-      const perfilActualizado = await actualizarPerfil({
-        nombre,
-        preferencia_genero: preferenciaGenero,
-        red_social_tipo: redSocialTipo,
-        red_social_usuario: redSocialUsuario,
+    if (perfilPropio) {
+      setDatos({
+        nombre: perfilPropio.nombre ?? "",
+        preferencia_genero: perfilPropio.preferencia_genero ?? "",
+        red_social_tipo: perfilPropio.red_social_tipo ?? "",
+        red_social_usuario: perfilPropio.red_social_usuario ?? "",
       });
-      setPerfil(perfilActualizado);
-      setModoEdicion(false);
-      setExito(true);
-      setTimeout(() => setExito(false), 3000);
-    } catch {
-      setError("No se pudo guardar los cambios. Inténtalo de nuevo.");
-    } finally {
-      setGuardando(false);
+    }
+  }, [perfilPropio]);
+
+  const actualizarDato = (e) => {
+    const { name, value } = e.target;
+    setMensajeError(null);
+    setDatos({ ...datos, [name]: value });
+  };
+
+  const enviar = async (e) => {
+    e.preventDefault();
+    setMensajeError(null);
+    setMensajeExito(false);
+    try {
+      const ok = await actualizarPerfilPropio(datos);
+      if (ok) {
+        setModoEdicion(false);
+        setMensajeExito(true);
+        setTimeout(() => setMensajeExito(false), 3000);
+      }
+    } catch (err) {
+      setMensajeError(
+        err.response?.data?.mensaje ??
+          "No se pudo guardar los cambios. Inténtalo de nuevo.",
+      );
     }
   };
 
-  const handleCancelar = () => {
-    setNombre(perfil.nombre || "");
-    setPreferenciaGenero(perfil.preferencia_genero || "");
-    setRedSocialTipo(perfil.red_social_tipo || "");
-    setRedSocialUsuario(perfil.red_social_usuario || "");
-    setError(null);
+  const cancelar = () => {
+    setDatos({
+      nombre: perfilPropio?.nombre ?? "",
+      preferencia_genero: perfilPropio?.preferencia_genero ?? "",
+      red_social_tipo: perfilPropio?.red_social_tipo ?? "",
+      red_social_usuario: perfilPropio?.red_social_usuario ?? "",
+    });
+    setMensajeError(null);
     setModoEdicion(false);
   };
 
-  if (cargando) {
+  if (!perfilPropio && error) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-4">
+        <p className="text-red-500">No se pudo cargar el perfil.</p>
+      </div>
+    );
+  }
+
+  if (!perfilPropio) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <p className="text-rose-400 text-lg animate-pulse">
@@ -91,15 +92,7 @@ const FormularioPerfil = () => {
     );
   }
 
-  if (error && !perfil) {
-    return (
-      <div className="flex-1 flex items-center justify-center p-4">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
-
-  const inicial = perfil.nombre?.[0].toUpperCase();
+  const inicial = perfilPropio.nombre?.[0].toUpperCase();
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 w-full">
@@ -110,11 +103,11 @@ const FormularioPerfil = () => {
         </div>
         <div className="text-center sm:text-left flex-1">
           <h1 className="text-3xl font-extrabold text-gray-800">
-            {perfil.nombre}
+            {perfilPropio.nombre}
           </h1>
-          <p className="text-gray-400 mt-1">{perfil.User?.email}</p>
+          <p className="text-gray-400 mt-1">{perfilPropio.User?.email}</p>
           <span className="inline-block mt-2 text-xs font-semibold uppercase tracking-wide bg-rose-100 text-rose-600 px-3 py-1 rounded-full">
-            {perfil.User?.rol === "admin" ? "Administrador" : "Usuario"}
+            {perfilPropio.User?.rol === "admin" ? "Administrador" : "Usuario"}
           </span>
         </div>
         {!modoEdicion && (
@@ -129,14 +122,14 @@ const FormularioPerfil = () => {
       </div>
 
       {/* Feedback */}
-      {exito && (
+      {mensajeExito && (
         <div className="mb-4 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3">
           ✅ Perfil actualizado correctamente.
         </div>
       )}
-      {error && (
+      {mensajeError && (
         <div className="mb-4 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
-          {error}
+          {mensajeError}
         </div>
       )}
 
@@ -151,7 +144,7 @@ const FormularioPerfil = () => {
               Género
             </p>
             <p className="text-gray-800 font-semibold">
-              {etiquetaGenero[perfil.genero] ?? "—"}
+              {etiquetaGenero[perfilPropio.genero] ?? "—"}
             </p>
           </div>
           <div className="bg-orange-50 rounded-2xl p-4">
@@ -159,8 +152,10 @@ const FormularioPerfil = () => {
               Fecha de nacimiento
             </p>
             <p className="text-gray-800 font-semibold">
-              {perfil.fecha_nacimiento
-                ? new Date(perfil.fecha_nacimiento).toLocaleDateString("es-ES")
+              {perfilPropio.fecha_nacimiento
+                ? new Date(perfilPropio.fecha_nacimiento).toLocaleDateString(
+                    "es-ES",
+                  )
                 : "—"}
             </p>
           </div>
@@ -174,21 +169,23 @@ const FormularioPerfil = () => {
         </h2>
 
         {modoEdicion ? (
-          <form onSubmit={handleGuardar} className="flex flex-col gap-5">
+          <form onSubmit={enviar} className="flex flex-col gap-5">
             <InputFormulario
               id="nombre"
+              name="nombre"
               label="Nombre"
               type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
+              value={datos.nombre}
+              onChange={actualizarDato}
               required
             />
 
             <SelectFormulario
-              id="preferenciaGenero"
+              id="preferencia_genero"
+              name="preferencia_genero"
               label="Me interesan"
-              value={preferenciaGenero}
-              onChange={(e) => setPreferenciaGenero(e.target.value)}
+              value={datos.preferencia_genero}
+              onChange={actualizarDato}
             >
               <option value="">Selecciona una opción</option>
               <option value="H">Hombres</option>
@@ -197,10 +194,11 @@ const FormularioPerfil = () => {
             </SelectFormulario>
 
             <SelectFormulario
-              id="redSocialTipo"
+              id="red_social_tipo"
+              name="red_social_tipo"
               label="Red social"
-              value={redSocialTipo}
-              onChange={(e) => setRedSocialTipo(e.target.value)}
+              value={datos.red_social_tipo}
+              onChange={actualizarDato}
             >
               <option value="">Sin red social</option>
               <option value="INSTAGRAM">Instagram</option>
@@ -210,25 +208,26 @@ const FormularioPerfil = () => {
             </SelectFormulario>
 
             <InputFormulario
-              id="redSocialUsuario"
+              id="red_social_usuario"
+              name="red_social_usuario"
               label="Usuario / número"
               type="text"
-              value={redSocialUsuario}
-              onChange={(e) => setRedSocialUsuario(e.target.value)}
+              value={datos.red_social_usuario}
+              onChange={actualizarDato}
               placeholder="@tu_usuario"
             />
 
             <div className="flex gap-3 pt-2">
               <BotonPrimario
                 type="submit"
-                disabled={guardando}
+                disabled={cargando}
                 className="flex-1"
               >
-                {guardando ? "Guardando..." : "💾 Guardar cambios"}
+                {cargando ? "Guardando..." : "💾 Guardar cambios"}
               </BotonPrimario>
               <BotonPrimario
                 type="button"
-                onClick={handleCancelar}
+                onClick={cancelar}
                 variante="secundario"
                 className="flex-1"
               >
@@ -243,7 +242,7 @@ const FormularioPerfil = () => {
                 Me interesan
               </p>
               <p className="text-gray-800 font-semibold">
-                {etiquetaPreferencia[perfil.preferencia_genero] ?? "—"}
+                {etiquetaPreferencia[perfilPropio.preferencia_genero] ?? "—"}
               </p>
             </div>
             <div className="bg-rose-50 rounded-2xl p-4">
@@ -251,8 +250,8 @@ const FormularioPerfil = () => {
                 Red social
               </p>
               <p className="text-gray-800 font-semibold">
-                {perfil.red_social_tipo
-                  ? etiquetaRedSocial[perfil.red_social_tipo]
+                {perfilPropio.red_social_tipo
+                  ? etiquetaRedSocial[perfilPropio.red_social_tipo]
                   : "—"}
               </p>
             </div>
@@ -261,7 +260,7 @@ const FormularioPerfil = () => {
                 Usuario / número
               </p>
               <p className="text-gray-800 font-semibold">
-                {perfil.red_social_usuario || "—"}
+                {perfilPropio.red_social_usuario || "—"}
               </p>
             </div>
           </div>
