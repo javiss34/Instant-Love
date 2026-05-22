@@ -1,14 +1,30 @@
-import useLlamada from "../hooks/useLlamada.js";
+import { useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
+import useSesion from "../hooks/useSesion.js";
+import useVideollamada from "../hooks/useVideollamada.js";
 
 const Llamada = () => {
-  const { contenedorRef, colgando, avisoCamara, colgar, siguiente } = useLlamada();
+  const { id } = useParams();
+  const { usuario } = useSesion();
+  const { avisoCamara, colgando, unirseASala, salir, colgar, siguiente } =
+    useVideollamada();
+  const contenedorRef = useRef(null);
+
+  useEffect(() => {
+    if (contenedorRef.current && usuario) {
+      unirseASala(contenedorRef.current, usuario);
+    }
+    return () => {
+      salir();
+    };
+  }, [usuario]);
 
   return (
     <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center py-8 px-4 gap-4">
-
       {avisoCamara && (
         <div className="w-full max-w-4xl bg-yellow-500 text-yellow-900 text-sm font-medium rounded-xl px-4 py-3 text-center">
-          No se ha podido acceder a la cámara o micrófono. Puedes seguir en la llamada en modo solo texto.
+          No se ha podido acceder a la cámara o micrófono. Puedes seguir en la
+          llamada en modo solo texto.
         </div>
       )}
 
@@ -19,14 +35,14 @@ const Llamada = () => {
 
         <div className="absolute bottom-5 left-0 right-0 flex justify-center gap-4">
           <button
-            onClick={siguiente}
+            onClick={() => siguiente(id)}
             disabled={colgando}
             className="bg-white text-gray-800 font-semibold px-8 py-3 rounded-xl shadow-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Siguiente ⏭️
           </button>
           <button
-            onClick={colgar}
+            onClick={() => colgar(id)}
             disabled={colgando}
             className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -34,7 +50,6 @@ const Llamada = () => {
           </button>
         </div>
       </div>
-
     </div>
   );
 };
