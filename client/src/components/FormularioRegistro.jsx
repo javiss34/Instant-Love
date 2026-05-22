@@ -1,104 +1,124 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { registrarUsuario } from "../services/authService.js";
+import { Link } from "react-router-dom";
+import useSesion from "../hooks/useSesion.js";
 import InputFormulario from "./ui/InputFormulario.jsx";
 import SelectFormulario from "./ui/SelectFormulario.jsx";
 import BotonPrimario from "./ui/BotonPrimario.jsx";
 import logo from "../assets/logo-instant-love.png";
 
+const datosRegistroInicial = {
+  username: "",
+  nombre: "",
+  email: "",
+  password: "",
+  fecha_nacimiento: "",
+  genero: "",
+  preferencia_genero: "",
+};
+
 const FormularioRegistro = () => {
-  const [nombre, setNombre] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fechaNacimiento, setFechaNacimiento] = useState("");
-  const [genero, setGenero] = useState("");
-  const [preferenciaGenero, setPreferenciaGenero] = useState("");
-  const [error, setError] = useState(null);
-  const [cargando, setCargando] = useState(false);
+  const [datos, setDatos] = useState(datosRegistroInicial);
+  const [mensajeError, setMensajeError] = useState(null);
+  const { registrar, cargando } = useSesion();
 
-  const navegar = useNavigate();
+  const actualizarDato = (e) => {
+    const { name, value } = e.target;
+    setMensajeError(null);
+    setDatos({ ...datos, [name]: value });
+  };
 
-  const handleSubmit = async (e) => {
+  const enviar = async (e) => {
     e.preventDefault();
-    setError(null);
-    setCargando(true);
-
+    setMensajeError(null);
     try {
-      await registrarUsuario({
-        nombre,
-        email,
-        password,
-        fecha_nacimiento: fechaNacimiento,
-        genero,
-        preferencia_genero: preferenciaGenero,
-      });
-      navegar("/login");
+      await registrar(datos);
+      setDatos(datosRegistroInicial);
     } catch (err) {
       if (err.name === "ZodError") {
-        setError(err.errors[0].message);
+        setMensajeError(err.errors[0].message);
       } else if (err.response?.data?.mensaje) {
-        setError(err.response.data.mensaje);
+        setMensajeError(err.response.data.mensaje);
       } else {
-        setError("Ha ocurrido un error inesperado. Inténtalo de nuevo.");
+        setMensajeError("Ha ocurrido un error inesperado. Inténtalo de nuevo.");
       }
-    } finally {
-      setCargando(false);
     }
   };
 
   return (
     <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
       <div className="text-center mb-8">
-        <img src={logo} alt="InstantLove" className="h-16 w-16 rounded-2xl shadow-md mx-auto mb-4" />
+        <img
+          src={logo}
+          alt="InstantLove"
+          className="h-16 w-16 rounded-2xl shadow-md mx-auto mb-4"
+        />
         <h1 className="text-3xl font-bold text-rose-500">InstantLove</h1>
-        <p className="text-gray-500 mt-2 text-sm">Crea tu cuenta y empieza a conocer gente</p>
+        <p className="text-gray-500 mt-2 text-sm">
+          Crea tu cuenta y empieza a conocer gente
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <form onSubmit={enviar} className="flex flex-col gap-5">
+        <InputFormulario
+          id="username"
+          name="username"
+          label="Nombre de usuario"
+          type="text"
+          value={datos.username}
+          onChange={actualizarDato}
+          placeholder="ej: juan_lopez"
+          required
+        />
+
         <InputFormulario
           id="nombre"
+          name="nombre"
           label="Nombre"
           type="text"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
+          value={datos.nombre}
+          onChange={actualizarDato}
           placeholder="Tu nombre"
           required
         />
 
         <InputFormulario
           id="email"
+          name="email"
           label="Email"
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={datos.email}
+          onChange={actualizarDato}
           placeholder="tu@email.com"
           required
         />
 
         <InputFormulario
           id="password"
+          name="password"
           label="Contraseña"
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={datos.password}
+          onChange={actualizarDato}
           placeholder="Mínimo 6 caracteres"
           required
         />
 
         <InputFormulario
-          id="fechaNacimiento"
+          id="fecha_nacimiento"
+          name="fecha_nacimiento"
           label="Fecha de nacimiento"
           type="date"
-          value={fechaNacimiento}
-          onChange={(e) => setFechaNacimiento(e.target.value)}
+          value={datos.fecha_nacimiento}
+          onChange={actualizarDato}
           required
         />
 
         <SelectFormulario
           id="genero"
+          name="genero"
           label="Género"
-          value={genero}
-          onChange={(e) => setGenero(e.target.value)}
+          value={datos.genero}
+          onChange={actualizarDato}
           required
         >
           <option value="">Selecciona una opción</option>
@@ -108,10 +128,11 @@ const FormularioRegistro = () => {
         </SelectFormulario>
 
         <SelectFormulario
-          id="preferenciaGenero"
+          id="preferencia_genero"
+          name="preferencia_genero"
           label="Me interesan"
-          value={preferenciaGenero}
-          onChange={(e) => setPreferenciaGenero(e.target.value)}
+          value={datos.preferencia_genero}
+          onChange={actualizarDato}
           required
         >
           <option value="">Selecciona una opción</option>
@@ -120,9 +141,9 @@ const FormularioRegistro = () => {
           <option value="AMBOS">Ambos</option>
         </SelectFormulario>
 
-        {error && (
+        {mensajeError && (
           <p className="text-sm text-center text-red-600 bg-red-50 rounded-lg py-2 px-3">
-            {error}
+            {mensajeError}
           </p>
         )}
 

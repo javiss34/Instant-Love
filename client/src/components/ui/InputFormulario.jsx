@@ -1,5 +1,6 @@
 const InputFormulario = ({
   id,
+  name,
   label,
   type = "text",
   value,
@@ -15,6 +16,7 @@ const InputFormulario = ({
       </label>
       <input
         id={id}
+        name={name ?? id}
         type={type}
         value={value}
         onChange={onChange}

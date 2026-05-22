@@ -1,5 +1,6 @@
 const SelectFormulario = ({
   id,
+  name,
   label,
   value,
   onChange,
@@ -14,6 +15,7 @@ const SelectFormulario = ({
       </label>
       <select
         id={id}
+        name={name ?? id}
         value={value}
         onChange={onChange}
         required={required}

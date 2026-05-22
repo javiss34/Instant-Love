@@ -1,18 +1,12 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import useSesion from "../../hooks/useSesion.js";
 import logo from "../../assets/logo-instant-love.png";
 
 const Header = () => {
   const { usuario, cerrarSesion } = useSesion();
-  const navegar = useNavigate();
   const ubicacion = useLocation();
 
   const esInicio = ubicacion.pathname === "/inicio";
-
-  const handleCerrarSesion = () => {
-    cerrarSesion();
-    navegar("/login");
-  };
 
   const inicial = usuario?.email?.[0].toUpperCase();
 
@@ -71,7 +65,7 @@ const Header = () => {
           {usuario ? (
             <>
               <button
-                onClick={handleCerrarSesion}
+                onClick={cerrarSesion}
                 className={`text-sm font-medium transition-colors ${
                   esInicio ? "text-white/90 hover:text-white" : "text-gray-500 hover:text-rose-500"
                 }`}
