@@ -1,38 +1,32 @@
 import jwt from "jsonwebtoken";
+import ApiError from "../utils/ApiError.js";
 
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET no está definido en las variables de entorno.");
 }
 
 const verificarToken = (req, res, next) => {
+  const cabecera = req.headers.authorization;
+
+  if (!cabecera) {
+    throw new ApiError(401, "Acceso denegado. Es necesario un token.");
+  }
+
+  const token = cabecera.startsWith("Bearer ")
+    ? cabecera.slice(7)
+    : cabecera;
+
   try {
-    let token = req.headers.authorization;
-
-    if (!token) {
-      return res
-        .status(401)
-        .json({ mensaje: "Acceso denegado. Es necesario un token." });
-    }
-
-    if (token.startsWith("Bearer ")) {
-      token = token.slice(7, token.length);
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    req.usuario = decoded;
-
+    req.usuario = jwt.verify(token, process.env.JWT_SECRET);
     next();
-  } catch (error) {
-    return res.status(401).json({ mensaje: "Token inválido." });
+  } catch {
+    throw new ApiError(401, "Token inválido.");
   }
 };
 
 const esAdmin = (req, res, next) => {
   if (!req.usuario || req.usuario.rol !== "ADMIN") {
-    return res
-      .status(403)
-      .json({ mensaje: "Acceso denegado. Se requiere rol de administrador." });
+    throw new ApiError(403, "Acceso denegado. Se requiere rol de administrador.");
   }
   next();
 };

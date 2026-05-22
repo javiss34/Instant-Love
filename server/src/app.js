@@ -7,6 +7,7 @@ import profileRoutes from "./routes/profileRoutes.js";
 import callRoutes from "./routes/callRoutes.js";
 import outcomeRoutes from "./routes/outcomeRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,8 @@ app.use("/api/perfil", profileRoutes);
 app.use("/api/llamadas", callRoutes);
 app.use("/api/voto", outcomeRoutes);
 app.use("/api/reportes", reportRoutes);
+
+app.use(errorHandler);
 
 const iniciarServidor = async () => {
   await conectarDB();
