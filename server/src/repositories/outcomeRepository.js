@@ -5,4 +5,6 @@ const buscarPorCallIdConLlamada = (callId) =>
 
 const crearParaLlamada = (callId) => Outcome.create({ callId });
 
-export default { buscarPorCallIdConLlamada, crearParaLlamada };
+const guardar = (outcome) => outcome.save();
+
+export default { buscarPorCallIdConLlamada, crearParaLlamada, guardar };
