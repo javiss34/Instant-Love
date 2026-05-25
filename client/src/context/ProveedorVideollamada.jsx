@@ -8,9 +8,12 @@ const URL_SALA_DAILY = import.meta.env.VITE_DAILY_ROOM_URL;
 
 const ContextoVideollamada = createContext(null);
 
+const modalInicial = { visible: false, idLlamada: null, accion: null };
+
 const ProveedorVideollamada = ({ children }) => {
   const [avisoCamara, setAvisoCamara] = useState(false);
   const [colgando, setColgando] = useState(false);
+  const [modal, setModal] = useState(modalInicial);
   const frameRef = useRef(null);
 
   const { ejecutar } = useApi();
@@ -24,7 +27,7 @@ const ProveedorVideollamada = ({ children }) => {
       iframeStyle: { width: "100%", height: "100%", border: "none" },
       showLeaveButton: false,
       showFullscreenButton: false,
-      showPreJoinUI: false,
+      showSettings: false,
     });
     frameRef.current = frame;
 
@@ -64,22 +67,36 @@ const ProveedorVideollamada = ({ children }) => {
     }
   };
 
-  const colgar = (idLlamada) =>
-    finalizarYNavegar(idLlamada, `/votacion/${idLlamada}`);
-  const siguiente = (idLlamada) => finalizarYNavegar(idLlamada, "/sala-espera");
+  const pedirMatch = (idLlamada, accion) => {
+    setModal({ visible: true, idLlamada, accion });
+  };
 
-  const votar = async (idLlamada, voto) => {
-    return await ejecutar(apiClient.put(`/voto/${idLlamada}`, { voto }));
+  const responderMatch = async (quiereMatch) => {
+    const { idLlamada, accion } = modal;
+    setModal(modalInicial);
+
+    try {
+      await ejecutar(
+        apiClient.put(`/voto/${idLlamada}`, {
+          voto: quiereMatch ? "SI" : "NO",
+        }),
+      );
+    } catch {
+      // fallo silencioso, continuamos con la navegación
+    }
+
+    const destino = accion === "siguiente" ? "/sala-espera" : "/inicio";
+    await finalizarYNavegar(idLlamada, destino);
   };
 
   const datosAProveer = {
     avisoCamara,
     colgando,
+    modal,
     unirseASala,
     salir,
-    colgar,
-    siguiente,
-    votar,
+    pedirMatch,
+    responderMatch,
   };
 
   return (
