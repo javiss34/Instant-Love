@@ -35,7 +35,7 @@ const FormularioRegistro = () => {
       setDatos(datosRegistroInicial);
     } catch (err) {
       if (err.name === "ZodError") {
-        setMensajeError(err.errors[0].message);
+        setMensajeError(err.issues?.[0]?.message ?? "Datos del formulario no válidos.");
       } else if (err.response?.data?.mensaje) {
         setMensajeError(err.response.data.mensaje);
       } else {
