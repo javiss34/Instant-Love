@@ -30,7 +30,7 @@ app.use(errorHandler);
 
 const iniciarServidor = async () => {
   await conectarDB();
-  await sequelize.sync({ alter: true });
+  await sequelize.sync();
   console.log("Modelos sincronizados con instantlovedb");
   app.listen(PORT, () => {
     console.log(
