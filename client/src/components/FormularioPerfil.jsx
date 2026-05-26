@@ -124,15 +124,6 @@ const FormularioPerfil = () => {
             {perfilPropio.User?.rol === "ADMIN" ? "Administrador" : "Usuario"}
           </span>
         </div>
-        {!modoEdicion && (
-          <BotonPrimario
-            onClick={() => setModoEdicion(true)}
-            variante="secundario"
-            className="!w-auto shrink-0 px-6"
-          >
-            ✏️ Editar perfil
-          </BotonPrimario>
-        )}
       </div>
 
       {/* Feedback */}
@@ -297,13 +288,24 @@ const FormularioPerfil = () => {
 
         <div className="border-t border-gray-100 mt-8 pt-6">
           {!confirmandoEliminar ? (
-            <BotonPrimario
-              variante="peligro"
-              onClick={() => setConfirmandoEliminar(true)}
-              className="!w-auto px-6"
-            >
-              Eliminar cuenta
-            </BotonPrimario>
+            <div className="flex gap-3 justify-center">
+              {!modoEdicion && (
+                <BotonPrimario
+                  variante="secundario"
+                  onClick={() => setModoEdicion(true)}
+                  className="!w-auto px-6"
+                >
+                  ✏️ Editar perfil
+                </BotonPrimario>
+              )}
+              <BotonPrimario
+                variante="peligro"
+                onClick={() => setConfirmandoEliminar(true)}
+                className="!w-auto px-6"
+              >
+                Eliminar cuenta
+              </BotonPrimario>
+            </div>
           ) : (
             <>
               <p className="text-gray-800 font-semibold mb-1">¿Seguro que quieres eliminar tu cuenta?</p>
