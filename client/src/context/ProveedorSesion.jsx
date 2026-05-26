@@ -65,6 +65,13 @@ const ProveedorSesion = ({ children }) => {
     navegar("/login");
   };
 
+  const eliminarCuenta = async () => {
+    await ejecutar(apiClient.delete("/auth/cuenta"));
+    borrarToken();
+    setUsuario(usuarioInicial);
+    navegar("/login");
+  };
+
   const datosAProveer = {
     usuario,
     sesionIniciada: usuario !== null,
@@ -74,6 +81,7 @@ const ProveedorSesion = ({ children }) => {
     iniciarSesion,
     registrar,
     cerrarSesion,
+    eliminarCuenta,
   };
 
   return (

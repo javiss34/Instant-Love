@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import usePerfiles from "../hooks/usePerfiles.js";
+import useSesion from "../hooks/useSesion.js";
 import InputFormulario from "./ui/InputFormulario.jsx";
 import SelectFormulario from "./ui/SelectFormulario.jsx";
 import BotonPrimario from "./ui/BotonPrimario.jsx";
@@ -22,10 +23,12 @@ const datosPerfilInicial = {
 
 const FormularioPerfil = () => {
   const { perfilPropio, actualizarPerfilPropio, cargando, error } = usePerfiles();
+  const { eliminarCuenta, cargando: cargandoSesion } = useSesion();
   const [datos, setDatos] = useState(datosPerfilInicial);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [mensajeError, setMensajeError] = useState(null);
   const [mensajeExito, setMensajeExito] = useState(false);
+  const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
 
   useEffect(() => {
     if (perfilPropio) {
@@ -265,6 +268,40 @@ const FormularioPerfil = () => {
             </div>
           </div>
         )}
+
+        <div className="border-t border-gray-100 mt-8 pt-6">
+          {!confirmandoEliminar ? (
+            <BotonPrimario
+              variante="peligro"
+              onClick={() => setConfirmandoEliminar(true)}
+              className="!w-auto px-6"
+            >
+              Eliminar cuenta
+            </BotonPrimario>
+          ) : (
+            <>
+              <p className="text-gray-800 font-semibold mb-1">¿Seguro que quieres eliminar tu cuenta?</p>
+              <p className="text-gray-500 text-sm mb-5">Esta acción es permanente y no se puede deshacer.</p>
+              <div className="flex gap-3">
+                <BotonPrimario
+                  variante="peligro"
+                  onClick={eliminarCuenta}
+                  disabled={cargandoSesion}
+                  className="!w-auto px-6"
+                >
+                  {cargandoSesion ? "Eliminando..." : "Sí, eliminar"}
+                </BotonPrimario>
+                <BotonPrimario
+                  variante="secundario"
+                  onClick={() => setConfirmandoEliminar(false)}
+                  className="!w-auto px-6"
+                >
+                  Cancelar
+                </BotonPrimario>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

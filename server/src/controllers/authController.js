@@ -17,4 +17,9 @@ const loginUsuario = async (req, res) => {
   });
 };
 
-export { registrarUsuario, loginUsuario };
+const eliminarCuenta = async (req, res) => {
+  await authService.eliminarCuenta(req.usuario.id);
+  res.status(200).json({ mensaje: "Cuenta eliminada correctamente" });
+};
+
+export { registrarUsuario, loginUsuario, eliminarCuenta };

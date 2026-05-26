@@ -83,4 +83,10 @@ const login = async (email, password) => {
   };
 };
 
-export default { registrar, login };
+const eliminarCuenta = async (userId) => {
+  const usuario = await userRepository.buscarPorId(userId);
+  if (!usuario) throw new ApiError(404, "Usuario no encontrado");
+  await userRepository.eliminarPorId(userId);
+};
+
+export default { registrar, login, eliminarCuenta };
