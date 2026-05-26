@@ -46,6 +46,8 @@ const registrar = async (datos) => {
         fecha_nacimiento: datos.fecha_nacimiento,
         genero: datos.genero,
         preferencia_genero: datos.preferencia_genero,
+        red_social_tipo: datos.red_social_tipo,
+        red_social_usuario: datos.red_social_usuario,
       },
       transaccion,
     );

@@ -18,6 +18,7 @@ const datosPerfilInicial = {
   nombre: "",
   preferencia_genero: "",
   red_social_tipo: "",
+  red_social_nombre: "",
   red_social_usuario: "",
 };
 
@@ -32,11 +33,17 @@ const FormularioPerfil = () => {
 
   useEffect(() => {
     if (perfilPropio) {
+      const tipo = perfilPropio.red_social_tipo ?? "";
+      const usuarioRaw = perfilPropio.red_social_usuario ?? "";
+      const partes = tipo === "OTRO" && usuarioRaw.includes(": ")
+        ? usuarioRaw.split(": ")
+        : null;
       setDatos({
         nombre: perfilPropio.nombre ?? "",
         preferencia_genero: perfilPropio.preferencia_genero ?? "",
-        red_social_tipo: perfilPropio.red_social_tipo ?? "",
-        red_social_usuario: perfilPropio.red_social_usuario ?? "",
+        red_social_tipo: tipo,
+        red_social_nombre: partes ? partes[0] : "",
+        red_social_usuario: partes ? partes.slice(1).join(": ") : usuarioRaw,
       });
     }
   }, [perfilPropio]);
@@ -52,7 +59,11 @@ const FormularioPerfil = () => {
     setMensajeError(null);
     setMensajeExito(false);
     try {
-      const ok = await actualizarPerfilPropio(datos);
+      const datosAEnviar = { ...datos };
+      if (datos.red_social_tipo === "OTRO") {
+        datosAEnviar.red_social_usuario = `${datos.red_social_nombre}: ${datos.red_social_usuario}`;
+      }
+      const ok = await actualizarPerfilPropio(datosAEnviar);
       if (ok) {
         setModoEdicion(false);
         setMensajeExito(true);
@@ -202,13 +213,27 @@ const FormularioPerfil = () => {
               label="Red social"
               value={datos.red_social_tipo}
               onChange={actualizarDato}
+              required
             >
-              <option value="">Sin red social</option>
+              <option value="">Selecciona una opción</option>
               <option value="INSTAGRAM">Instagram</option>
               <option value="WHATSAPP">WhatsApp</option>
               <option value="TIK TOK">TikTok</option>
               <option value="OTRO">Otro</option>
             </SelectFormulario>
+
+            {datos.red_social_tipo === "OTRO" && (
+              <InputFormulario
+                id="red_social_nombre"
+                name="red_social_nombre"
+                label="¿Cuál red social?"
+                type="text"
+                value={datos.red_social_nombre}
+                onChange={actualizarDato}
+                placeholder="ej: Telegram, Snapchat..."
+                required
+              />
+            )}
 
             <InputFormulario
               id="red_social_usuario"
@@ -218,6 +243,7 @@ const FormularioPerfil = () => {
               value={datos.red_social_usuario}
               onChange={actualizarDato}
               placeholder="@tu_usuario"
+              required
             />
 
             <div className="flex gap-3 pt-2">

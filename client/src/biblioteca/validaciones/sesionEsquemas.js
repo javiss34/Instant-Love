@@ -26,6 +26,13 @@ const esquemaRegistro = z.object({
   preferencia_genero: z.enum(["H", "M", "AMBOS"], {
     errorMap: () => ({ message: "La preferencia de género debe ser H, M o AMBOS" }),
   }),
+  red_social_tipo: z.enum(["INSTAGRAM", "WHATSAPP", "TIK TOK", "OTRO"], {
+    errorMap: () => ({ message: "Debes seleccionar una red social" }),
+  }),
+  red_social_usuario: z
+    .string()
+    .min(2, "El usuario o número debe tener al menos 2 caracteres")
+    .max(100, "El usuario o número no puede superar los 100 caracteres"),
 });
 
 export { esquemaLogin, esquemaRegistro };

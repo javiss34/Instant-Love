@@ -10,6 +10,7 @@ const estadisticasPorUsuario = async (userId) => {
     where: {
       [Op.or]: [{ user1Id: userId }, { user2Id: userId }],
       estado: "COMPLETADA",
+      duracion: { [Op.gt]: 0 },//Solo se cuentan las llamadas donde la duración es >0
     },
     attributes: ["duracion", "user1Id", "user2Id"],
   });

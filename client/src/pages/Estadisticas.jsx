@@ -62,7 +62,9 @@ const Estadisticas = () => {
                         <p className="font-bold text-gray-800 text-lg">{match.nombre}</p>
                         {match.red_social_usuario && (
                           <p className="text-sm text-gray-500 truncate">
-                            {match.red_social_tipo}: {match.red_social_usuario}
+                            {match.red_social_tipo === "OTRO"
+                              ? match.red_social_usuario
+                              : `${match.red_social_tipo}: ${match.red_social_usuario}`}
                           </p>
                         )}
                       </div>
