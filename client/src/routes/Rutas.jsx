@@ -8,6 +8,7 @@ import SalaEspera from "../pages/SalaEspera.jsx";
 import Llamada from "../pages/Llamada.jsx";
 import Votacion from "../pages/Votacion.jsx";
 import RutaPrivada from "./RutaPrivada.jsx";
+import ProveedorEstadisticas from "../context/ProveedorEstadisticas.jsx";
 
 const Rutas = () => {
   return (
@@ -28,7 +29,9 @@ const Rutas = () => {
         path="/estadisticas"
         element={
           <RutaPrivada>
-            <Estadisticas />
+            <ProveedorEstadisticas>
+              <Estadisticas />
+            </ProveedorEstadisticas>
           </RutaPrivada>
         }
       />

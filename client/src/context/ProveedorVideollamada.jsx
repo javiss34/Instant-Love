@@ -20,6 +20,7 @@ const ProveedorVideollamada = ({ children }) => {
   const frameRef = useRef(null);
   const intervaloTemporizadorRef = useRef(null);
   const idLlamadaRef = useRef(null);
+  const tiempoRestanteRef = useRef(DURACION_LLAMADA_SEGUNDOS);
 
   const { ejecutar } = useApi();
   const navegar = useNavigate();
@@ -41,6 +42,7 @@ const ProveedorVideollamada = ({ children }) => {
           clearInterval(intervaloTemporizadorRef.current);
           intervaloTemporizadorRef.current = null;
           setTemporizadorActivo(false);
+          tiempoRestanteRef.current = 0;
           if (idLlamadaRef.current) {
             setModal({
               visible: true,
@@ -50,6 +52,7 @@ const ProveedorVideollamada = ({ children }) => {
           }
           return 0;
         }
+        tiempoRestanteRef.current = segundos - 1;
         return segundos - 1;
       });
     }, 1000);
@@ -59,6 +62,7 @@ const ProveedorVideollamada = ({ children }) => {
     if (!contenedor || frameRef.current) return;
     setAvisoCamara(false);
     setTiempoRestante(DURACION_LLAMADA_SEGUNDOS);
+    tiempoRestanteRef.current = DURACION_LLAMADA_SEGUNDOS;
     idLlamadaRef.current = idLlamada;
 
     const frame = DailyIframe.createFrame(contenedor, {
@@ -110,9 +114,10 @@ const ProveedorVideollamada = ({ children }) => {
     setColgando(true);
     try {
       await destruirFrame();
+      const duracion = DURACION_LLAMADA_SEGUNDOS - tiempoRestanteRef.current;
       await ejecutar(
         apiClient.put(`/llamadas/finalizar/${idLlamada}`, {
-          duracion: 0,
+          duracion,
           estado: "COMPLETADA",
         }),
       );
@@ -129,8 +134,8 @@ const ProveedorVideollamada = ({ children }) => {
     setModal({ visible: true, idLlamada, accion });
   };
 
-  const responderMatch = async (quiereMatch) => {
-    const { idLlamada, accion } = modal;
+  const responderMatch = async (quiereMatch, accion) => {
+    const { idLlamada } = modal;
     setModal(modalInicial);
 
     try {
