@@ -2,7 +2,10 @@ import { Profile, User } from "../models/index.js";
 
 const buscarPorIdConUsuario = (id) =>
   Profile.findByPk(id, {
-    include: { model: User, attributes: ["username", "email", "rol", "activo"] },
+    include: {
+      model: User,
+      attributes: ["username", "email", "rol", "activo"],
+    },
   });
 
 const buscarPorIdConActivo = (id) =>
@@ -10,10 +13,13 @@ const buscarPorIdConActivo = (id) =>
     include: { model: User, attributes: ["activo"] },
   });
 
-const buscarPorId = (id) => Profile.findByPk(id);
+const buscarPorId = (id) => {
+  return Profile.findByPk(id);
+};
 
-const crear = (datos, transaccion) =>
-  Profile.create(datos, { transaction: transaccion });
+const crear = (datos, transaccion) => {
+  return Profile.create(datos, { transaction: transaccion });
+};
 
 const actualizarPorId = async (id, campos) => {
   const [filas] = await Profile.update(campos, { where: { id } });

@@ -1,17 +1,25 @@
 import { User } from "../models/index.js";
 
-const buscarPorEmail = (email) => User.findOne({ where: { email } });
+const buscarPorEmail = (email) => {return User.findOne({ where: { email } })};
 
-const buscarPorUsername = (username) =>
-  User.findOne({ where: { username } });
+const buscarPorUsername = (username) =>{
 
-const buscarPorId = (id) => User.findByPk(id);
+  return User.findOne({ where: { username } });
+}
 
-const crear = (datos, transaccion) =>
-  User.create(datos, { transaction: transaccion });
+const buscarPorId = (id) => {
+  return User.findByPk(id)
+};
 
-const eliminarPorId = (id) =>
-  User.destroy({ where: { id }, force: true });
+const crear = (datos, transaccion) =>{
+  return User.create(datos, { transaction: transaccion });
+
+}
+
+const eliminarPorId = (id) =>{
+  return User.destroy({ where: { id }, force: true });
+
+}
 
 export default {
   buscarPorEmail,

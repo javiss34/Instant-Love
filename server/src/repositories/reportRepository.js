@@ -1,7 +1,11 @@
 import { Report } from "../models/index.js";
 
-const crear = (datos) => Report.create(datos);
+const crear = (datos) => {
+  return Report.create(datos);
+};
 
-const listar = () => Report.findAll({ order: [["createdAt", "DESC"]] });
+const listar = () => {
+  return Report.findAll({ order: [["createdAt", "DESC"]] });
+};
 
 export default { crear, listar };
