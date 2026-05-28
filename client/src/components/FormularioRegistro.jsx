@@ -9,7 +9,7 @@ import {
   esquemaRegistro,
   esquemaRegistroPaso1,
 } from "../biblioteca/validaciones/sesionEsquemas.js";
-import MostrarError from "./ui/MostrarError.jsx";
+import MostrarError from "./MostrarError.jsx";
 
 
 const FormularioRegistro = () => {

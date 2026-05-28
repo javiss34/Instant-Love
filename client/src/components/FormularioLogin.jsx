@@ -4,7 +4,7 @@ import useSesion from "../hooks/useSesion.js";
 import { esquemaLogin } from "../biblioteca/validaciones/sesionEsquemas.js";
 import InputFormulario from "./ui/InputFormulario.jsx";
 import BotonPrimario from "./ui/BotonPrimario.jsx";
-import MostrarError from "./ui/MostrarError.jsx";
+import MostrarError from "./MostrarError.jsx";
 import logo from "../assets/logo-instant-love.png";
 
 //Muy parecido al de registro, allí ya lo explico todo

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { esquemaPerfil } from "../biblioteca/validaciones/sesionEsquemas.js";
+import InputFormulario from "./ui/InputFormulario.jsx";
+import SelectFormulario from "./ui/SelectFormulario.jsx";
 import BotonPrimario from "./ui/BotonPrimario.jsx";
+import MostrarError from "./MostrarError.jsx";
 
-//Pasamos todos los datos por props, así aquí no hay que llamar a ningún hook.
 const FormularioPerfil = ({
   datosIniciales,
   alGuardar,
@@ -31,9 +33,8 @@ const FormularioPerfil = ({
     if (datos.red_social_tipo === "OTRO") {
       datosAEnviar.red_social_usuario = `${datos.red_social_nombre}: ${datos.red_social_usuario}`;
     }
-    //Aquí no hace falta usar truy/catch ya que se hara en MiPerfil.jsx
-    const resultado = esquemaPerfil.safeParse(datosAEnviar);
 
+    const resultado = esquemaPerfil.safeParse(datosAEnviar);
     if (!resultado.success) {
       const nuevosErrores = {};
       resultado.error.issues.forEach(({ path, message }) => {
@@ -43,130 +44,88 @@ const FormularioPerfil = ({
       return;
     }
 
-    alGuardar(resultado.data);
+    try {
+      await alGuardar(resultado.data);
+    } catch (err) {
+      const mensaje =
+        err.response?.data?.mensaje ?? "No se pudieron guardar los cambios.";
+      if (mensaje.toLowerCase().includes("nombre")) {
+        setErrores({ nombre: mensaje });
+      } else if (mensaje.toLowerCase().includes("usuario")) {
+        setErrores({ red_social_usuario: mensaje });
+      } else {
+        setErrores({ general: mensaje });
+      }
+    }
   };
 
   return (
     <form onSubmit={manejarEnvio} className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
-        <label htmlFor="nombre" className="text-sm font-semibold text-gray-700">
-          Nombre
-        </label>
-        <input
-          id="nombre"
-          name="nombre"
-          type="text"
-          value={datos.nombre}
-          onChange={actualizarDato}
-          className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-rose-400"
-        />
-        {errores.nombre && (
-          <span className="text-red-500 text-xs mt-1">{errores.nombre}</span>
-        )}
-      </div>
+      <InputFormulario
+        id="nombre"
+        name="nombre"
+        label="Nombre"
+        type="text"
+        value={datos.nombre}
+        onChange={actualizarDato}
+        error={errores.nombre}
+      />
 
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="preferencia_genero"
-          className="text-sm font-semibold text-gray-700"
-        >
-          Me interesan
-        </label>
-        <select
-          id="preferencia_genero"
-          name="preferencia_genero"
-          value={datos.preferencia_genero}
-          onChange={actualizarDato}
-          className="w-full border border-gray-300 rounded-xl p-3 bg-white focus:outline-none focus:border-rose-400"
-        >
-          <option value="">Selecciona una opción</option>
-          <option value="H">Hombres</option>
-          <option value="M">Mujeres</option>
-          <option value="AMBOS">Ambos</option>
-        </select>
-        {errores.preferencia_genero && (
-          <span className="text-red-500 text-xs mt-1">
-            {errores.preferencia_genero}
-          </span>
-        )}
-      </div>
+      <SelectFormulario
+        id="preferencia_genero"
+        name="preferencia_genero"
+        label="Me interesan"
+        value={datos.preferencia_genero}
+        onChange={actualizarDato}
+        error={errores.preferencia_genero}
+      >
+        <option value="">Selecciona una opción</option>
+        <option value="H">Hombres</option>
+        <option value="M">Mujeres</option>
+        <option value="AMBOS">Ambos</option>
+      </SelectFormulario>
 
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="red_social_tipo"
-          className="text-sm font-semibold text-gray-700"
-        >
-          Red social
-        </label>
-        <select
-          id="red_social_tipo"
-          name="red_social_tipo"
-          value={datos.red_social_tipo}
-          onChange={actualizarDato}
-          className="w-full border border-gray-300 rounded-xl p-3 bg-white focus:outline-none focus:border-rose-400"
-        >
-          <option value="">Selecciona una opción</option>
-          <option value="INSTAGRAM">Instagram</option>
-          <option value="WHATSAPP">WhatsApp</option>
-          <option value="TIK TOK">TikTok</option>
-          <option value="OTRO">Otro</option>
-        </select>
-        {errores.red_social_tipo && (
-          <span className="text-red-500 text-xs mt-1">
-            {errores.red_social_tipo}
-          </span>
-        )}
-      </div>
+      <SelectFormulario
+        id="red_social_tipo"
+        name="red_social_tipo"
+        label="Red social"
+        value={datos.red_social_tipo}
+        onChange={actualizarDato}
+        error={errores.red_social_tipo}
+      >
+        <option value="">Selecciona una opción</option>
+        <option value="INSTAGRAM">Instagram</option>
+        <option value="WHATSAPP">WhatsApp</option>
+        <option value="TIK TOK">TikTok</option>
+        <option value="OTRO">Otro</option>
+      </SelectFormulario>
 
       {datos.red_social_tipo === "OTRO" && (
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="red_social_nombre"
-            className="text-sm font-semibold text-gray-700"
-          >
-            ¿Cuál red social?
-          </label>
-          <input
-            id="red_social_nombre"
-            name="red_social_nombre"
-            type="text"
-            value={datos.red_social_nombre}
-            onChange={actualizarDato}
-            placeholder="ej: Telegram, Snapchat..."
-            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-rose-400"
-          />
-          {errores.red_social_nombre && (
-            <span className="text-red-500 text-xs mt-1">
-              {errores.red_social_nombre}
-            </span>
-          )}
-        </div>
+        <InputFormulario
+          id="red_social_nombre"
+          name="red_social_nombre"
+          label="¿Cuál red social?"
+          type="text"
+          value={datos.red_social_nombre}
+          onChange={actualizarDato}
+          placeholder="ej: Telegram, Snapchat..."
+          error={errores.red_social_nombre}
+        />
       )}
 
-      <div className="flex flex-col gap-1">
-        <label
-          htmlFor="red_social_usuario"
-          className="text-sm font-semibold text-gray-700"
-        >
-          Usuario / número
-        </label>
-        <input
-          id="red_social_usuario"
-          name="red_social_usuario"
-          type="text"
-          value={datos.red_social_usuario}
-          onChange={actualizarDato}
-          placeholder="@tu_usuario"
-          className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-rose-400"
-        />
-        {errores.red_social_usuario && (
-          <span className="text-red-500 text-xs mt-1">
-            {errores.red_social_usuario}
-          </span>
-        )}
-      </div>
+      <InputFormulario
+        id="red_social_usuario"
+        name="red_social_usuario"
+        label="Usuario / número"
+        type="text"
+        value={datos.red_social_usuario}
+        onChange={actualizarDato}
+        placeholder="@tu_usuario"
+        error={errores.red_social_usuario}
+      />
 
-      {/* Botones de acción del formulario */}
+      <MostrarError objetoErrores={{ general: errores.general }} />
+
       <div className="pt-4 mt-2 border-t border-gray-100">
         {!confirmandoEliminar ? (
           <div className="flex flex-wrap gap-3 items-center">
@@ -185,7 +144,6 @@ const FormularioPerfil = ({
             >
               Cancelar
             </BotonPrimario>
-            {/* El ml-auto empuja este botón a la derecha en pantallas grandes */}
             <BotonPrimario
               type="button"
               onClick={iniciarEliminacion}
