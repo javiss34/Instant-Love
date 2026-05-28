@@ -1,14 +1,19 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useSesion from "../../hooks/useSesion.js";
+import usePerfiles from "../../hooks/usePerfiles.js";
 import logo from "../../assets/logo-instant-love.png";
 
 const Header = () => {
   const { usuario, cerrarSesion } = useSesion();
+  const { perfilPropio } = usePerfiles();
   const ubicacion = useLocation();
+  const [confirmandoSalir, setConfirmandoSalir] = useState(false);
 
   const esInicio = ubicacion.pathname === "/inicio";
 
   const inicial = usuario?.email?.[0].toUpperCase();
+  const foto = perfilPropio?.foto ?? null;
 
   return (
     <header className={`sticky top-0 z-50 transition-colors duration-300 ${
@@ -51,11 +56,6 @@ const Header = () => {
             }`}>
               Estadísticas
             </Link>
-            <Link to="/mi-perfil" className={`text-sm font-medium transition-colors ${
-              esInicio ? "text-white/90 hover:text-white" : "text-gray-500 hover:text-rose-500"
-            }`}>
-              Mi Perfil
-            </Link>
             {usuario?.rol === "ADMIN" && (
               <Link to="/admin" className={`text-sm font-medium transition-colors ${
                 esInicio ? "text-white/90 hover:text-white" : "text-gray-500 hover:text-rose-500"
@@ -63,6 +63,11 @@ const Header = () => {
                 Admin
               </Link>
             )}
+            <Link to="/mi-perfil" className={`text-sm font-medium transition-colors ${
+              esInicio ? "text-white/90 hover:text-white" : "text-gray-500 hover:text-rose-500"
+            }`}>
+              Mi Perfil
+            </Link>
           </nav>
         ) : (
           <div />
@@ -72,20 +77,30 @@ const Header = () => {
           {usuario ? (
             <>
               <button
-                onClick={cerrarSesion}
+                onClick={() => setConfirmandoSalir(true)}
                 className={`text-sm font-medium transition-colors ${
                   esInicio ? "text-white/90 hover:text-white" : "text-gray-500 hover:text-rose-500"
                 }`}
               >
                 Salir
               </button>
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shadow-md ring-2 ${
-                esInicio
-                  ? "bg-white text-rose-500 ring-white/30"
-                  : "bg-gradient-to-br from-rose-400 to-orange-400 text-white ring-white"
-              }`}>
-                {inicial}
-              </div>
+              <Link to="/mi-perfil">
+                {foto ? (
+                  <img
+                    src={foto}
+                    alt={inicial}
+                    className="w-9 h-9 rounded-full object-cover shadow-md ring-2 ring-white"
+                  />
+                ) : (
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shadow-md ring-2 ${
+                    esInicio
+                      ? "bg-white text-rose-500 ring-white/30"
+                      : "bg-gradient-to-br from-rose-400 to-orange-400 text-white ring-white"
+                  }`}>
+                    {inicial}
+                  </div>
+                )}
+              </Link>
             </>
           ) : (
             <nav className="flex items-center gap-4">
@@ -109,6 +124,28 @@ const Header = () => {
         </div>
 
       </div>
+      {confirmandoSalir && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
+            <p className="text-gray-800 font-bold text-lg mb-2">¿Seguro que quieres salir?</p>
+            <p className="text-gray-400 text-sm mb-6">Se cerrará tu sesión.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={cerrarSesion}
+                className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 rounded-xl transition-colors"
+              >
+                Sí, salir
+              </button>
+              <button
+                onClick={() => setConfirmandoSalir(false)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

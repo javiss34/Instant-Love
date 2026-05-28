@@ -74,9 +74,17 @@ const PanelAdmin = () => {
                     <tr key={u.id} className="border-b border-rose-50 last:border-0 hover:bg-rose-50/30 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-sm font-bold shrink-0">
-                            {inicial}
-                          </div>
+                          {u.Profile?.foto ? (
+                            <img
+                              src={u.Profile.foto}
+                              alt={inicial}
+                              className="w-9 h-9 rounded-full object-cover shrink-0"
+                            />
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-sm font-bold shrink-0">
+                              {inicial}
+                            </div>
+                          )}
                           <div>
                             <p className="font-semibold text-gray-800">{u.Profile?.nombre ?? "—"}</p>
                             <p className="text-gray-400 text-xs">@{u.username}</p>
