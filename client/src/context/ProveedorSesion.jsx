@@ -2,10 +2,6 @@ import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiClient, guardarToken, borrarToken, leerToken } from "../api/apiClient.js";
 import useApi from "../hooks/useApi.js";
-import {
-  esquemaLogin,
-  esquemaRegistro,
-} from "../biblioteca/validaciones/sesionEsquemas.js";
 
 const ContextoSesion = createContext(null);
 
@@ -44,9 +40,8 @@ const ProveedorSesion = ({ children }) => {
   }, []);
 
   const iniciarSesion = async (datos) => {
-    const datosValidados = esquemaLogin.parse(datos);
     const respuesta = await ejecutar(
-      apiClient.post("/auth/iniciar-sesion", datosValidados),
+      apiClient.post("/auth/iniciar-sesion", datos),
     );
     guardarToken(respuesta.token);
     setUsuario(respuesta.usuario);
@@ -54,8 +49,7 @@ const ProveedorSesion = ({ children }) => {
   };
 
   const registrar = async (datos) => {
-    const datosValidados = esquemaRegistro.parse(datos);
-    await ejecutar(apiClient.post("/auth/registrar", datosValidados));
+    await ejecutar(apiClient.post("/auth/registrar", datos));
     navegar("/login");
   };
 

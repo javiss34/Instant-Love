@@ -56,6 +56,13 @@ const Header = () => {
             }`}>
               Mi Perfil
             </Link>
+            {usuario?.rol === "ADMIN" && (
+              <Link to="/admin" className={`text-sm font-medium transition-colors ${
+                esInicio ? "text-white/90 hover:text-white" : "text-gray-500 hover:text-rose-500"
+              }`}>
+                Admin
+              </Link>
+            )}
           </nav>
         ) : (
           <div />

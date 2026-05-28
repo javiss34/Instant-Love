@@ -35,4 +35,29 @@ const esquemaRegistro = z.object({
     .max(100, "El usuario o número no puede superar los 100 caracteres"),
 });
 
-export { esquemaLogin, esquemaRegistro };
+const esquemaRegistroPaso1 = z.object({
+  username: esquemaRegistro.shape.username,
+  nombre: esquemaRegistro.shape.nombre,
+  email: esquemaRegistro.shape.email,
+  password: esquemaRegistro.shape.password,
+  fecha_nacimiento: esquemaRegistro.shape.fecha_nacimiento,
+});
+
+const esquemaPerfil = z.object({
+  nombre: z
+    .string()
+    .min(2, "El nombre debe tener al menos 2 caracteres")
+    .max(50, "El nombre no puede superar los 50 caracteres"),
+  preferencia_genero: z.enum(["H", "M", "AMBOS"], {
+    errorMap: () => ({ message: "Debes seleccionar una preferencia de género" }),
+  }),
+  red_social_tipo: z.enum(["INSTAGRAM", "WHATSAPP", "TIK TOK", "OTRO"], {
+    errorMap: () => ({ message: "Debes seleccionar una red social" }),
+  }),
+  red_social_usuario: z
+    .string()
+    .min(2, "El usuario o número debe tener al menos 2 caracteres")
+    .max(100, "El usuario o número no puede superar los 100 caracteres"),
+});
+
+export { esquemaLogin, esquemaRegistro, esquemaRegistroPaso1, esquemaPerfil };

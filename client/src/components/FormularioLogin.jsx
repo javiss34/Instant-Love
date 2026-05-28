@@ -1,39 +1,50 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useSesion from "../hooks/useSesion.js";
+import { esquemaLogin } from "../biblioteca/validaciones/sesionEsquemas.js";
 import InputFormulario from "./ui/InputFormulario.jsx";
 import BotonPrimario from "./ui/BotonPrimario.jsx";
+import MostrarError from "./ui/MostrarError.jsx";
 import logo from "../assets/logo-instant-love.png";
 
-const datosLoginInicial = {
-  email: "",
-  password: "",
-};
-
+//Muy parecido al de registro, allí ya lo explico todo
 const FormularioLogin = () => {
+  const datosLoginInicial = {
+    email: "",
+    password: "",
+  };
   const [datos, setDatos] = useState(datosLoginInicial);
-  const [mensajeError, setMensajeError] = useState(null);
+  const [errores, setErrores] = useState({});
   const { iniciarSesion, cargando } = useSesion();
 
   const actualizarDato = (e) => {
     const { name, value } = e.target;
-    setMensajeError(null);
+    setErrores({});
     setDatos({ ...datos, [name]: value });
   };
 
   const enviar = async (e) => {
     e.preventDefault();
-    setMensajeError(null);
+    setErrores({});
+
     try {
-      await iniciarSesion(datos);
+      const resultado = esquemaLogin.safeParse(datos);
+      if (!resultado.success) {
+        const nuevosErrores = {};
+        resultado.error.issues.forEach(({ path, message }) => {
+          nuevosErrores[path[0]] = message;
+        });
+        setErrores(nuevosErrores);
+        return;
+      }
+      await iniciarSesion(resultado.data);
       setDatos(datosLoginInicial);
     } catch (err) {
-      if (err.name === "ZodError") {
-        setMensajeError(err.issues?.[0]?.message ?? "Datos del formulario no válidos.");
-      } else if (err.response?.data?.mensaje) {
-        setMensajeError(err.response.data.mensaje);
+      const mensaje = err.response?.data?.mensaje ?? "Error inesperado.";
+      if (mensaje.toLowerCase().includes("email")) {
+        setErrores({ email: mensaje });
       } else {
-        setMensajeError("Ha ocurrido un error inesperado. Inténtalo de nuevo.");
+        setErrores({ general: mensaje });
       }
     }
   };
@@ -61,7 +72,7 @@ const FormularioLogin = () => {
           value={datos.email}
           onChange={actualizarDato}
           placeholder="tu@email.com"
-          required
+          error={errores.email}
         />
 
         <InputFormulario
@@ -72,14 +83,10 @@ const FormularioLogin = () => {
           value={datos.password}
           onChange={actualizarDato}
           placeholder="••••••••"
-          required
+          error={errores.password}
         />
 
-        {mensajeError && (
-          <p className="text-sm text-center text-red-600 bg-red-50 rounded-lg py-2 px-3">
-            {mensajeError}
-          </p>
-        )}
+        <MostrarError objetoErrores={{ general: errores.general }} />
 
         <BotonPrimario type="submit" disabled={cargando}>
           {cargando ? "Entrando..." : "Entrar"}

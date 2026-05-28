@@ -7,8 +7,12 @@ import MiPerfil from "../pages/MiPerfil.jsx";
 import SalaEspera from "../pages/SalaEspera.jsx";
 import Llamada from "../pages/Llamada.jsx";
 import Votacion from "../pages/Votacion.jsx";
+import PanelAdmin from "../pages/PanelAdmin.jsx";
+import DetalleUsuario from "../pages/DetalleUsuario.jsx";
 import RutaPrivada from "./RutaPrivada.jsx";
+import RutaAdmin from "./RutaAdmin.jsx";
 import ProveedorEstadisticas from "../context/ProveedorEstadisticas.jsx";
+import ProveedorAdmin from "../context/ProveedorAdmin.jsx";
 
 const Rutas = () => {
   return (
@@ -65,6 +69,26 @@ const Rutas = () => {
           <RutaPrivada>
             <Votacion />
           </RutaPrivada>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <RutaAdmin>
+            <ProveedorAdmin>
+              <PanelAdmin />
+            </ProveedorAdmin>
+          </RutaAdmin>
+        }
+      />
+      <Route
+        path="/admin/usuarios/:id"
+        element={
+          <RutaAdmin>
+            <ProveedorAdmin>
+              <DetalleUsuario />
+            </ProveedorAdmin>
+          </RutaAdmin>
         }
       />
     </Routes>

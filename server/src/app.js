@@ -8,6 +8,7 @@ import callRoutes from "./routes/callRoutes.js";
 import outcomeRoutes from "./routes/outcomeRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import statsRoutes from "./routes/statsRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
@@ -27,6 +28,7 @@ app.use("/api/llamadas", callRoutes);
 app.use("/api/voto", outcomeRoutes);
 app.use("/api/reportes", reportRoutes);
 app.use("/api/estadisticas", statsRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use(errorHandler);
 

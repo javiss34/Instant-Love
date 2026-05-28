@@ -1,4 +1,11 @@
+import { Link } from "react-router-dom";
 import useEstadisticas from "../hooks/useEstadisticas.js";
+
+const coloresEstado = {
+  PENDIENTE: "bg-yellow-100 text-yellow-700",
+  REVISADO: "bg-blue-100 text-blue-700",
+  SANCIONADO: "bg-red-100 text-red-600",
+};
 
 const Estadisticas = () => {
   const { estadisticas, cargando } = useEstadisticas();
@@ -10,6 +17,7 @@ const Estadisticas = () => {
   ];
 
   const matches = estadisticas?.matches ?? [];
+  const reportes = estadisticas?.reportes ?? null;
 
   return (
     <div className="flex-1 bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50">
@@ -73,6 +81,50 @@ const Estadisticas = () => {
                 </div>
               )}
             </div>
+            {reportes !== null && (
+              <div className="mt-12">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">Últimos reportes</h2>
+                  <Link
+                    to="/admin"
+                    className="text-sm font-semibold text-rose-500 hover:text-rose-700 transition-colors"
+                  >
+                    Ver panel admin →
+                  </Link>
+                </div>
+                {reportes.length === 0 ? (
+                  <p className="text-gray-400 text-center py-8">No hay reportes recientes.</p>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {reportes.map((r) => (
+                      <div
+                        key={r.id}
+                        className="bg-white/70 backdrop-blur-sm rounded-2xl p-5 flex items-start justify-between gap-4 shadow-sm border border-rose-100"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-gray-800 font-medium text-sm">{r.motivo}</p>
+                          <p className="text-gray-400 text-xs mt-1">
+                            <span className="font-semibold">@{r.Autor?.username ?? "—"}</span>
+                            {" → "}
+                            <Link
+                              to={`/admin/usuarios/${r.acusadoId}`}
+                              className="font-semibold text-rose-500 hover:underline"
+                            >
+                              @{r.Destino?.username ?? "—"}
+                            </Link>
+                            {" · "}
+                            {new Date(r.createdAt).toLocaleDateString("es-ES")}
+                          </p>
+                        </div>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${coloresEstado[r.estado]}`}>
+                          {r.estado}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </>
         )}
 

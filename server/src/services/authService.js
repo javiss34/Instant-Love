@@ -7,11 +7,9 @@ import profileRepository from "../repositories/profileRepository.js";
 import subscriptionRepository from "../repositories/subscriptionRepository.js";
 
 const generarToken = (usuario) =>
-  jwt.sign(
-    { id: usuario.id, rol: usuario.rol },
-    process.env.JWT_SECRET,
-    { expiresIn: "14d" },
-  );
+  jwt.sign({ id: usuario.id, rol: usuario.rol }, process.env.JWT_SECRET, {
+    expiresIn: "14d",
+  });
 
 const usuarioPublico = (usuario) => ({
   id: usuario.id,

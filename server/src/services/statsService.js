@@ -1,8 +1,9 @@
 import callHistoryRepository from "../repositories/callHistoryRepository.js";
 import outcomeRepository from "../repositories/outcomeRepository.js";
 import profileRepository from "../repositories/profileRepository.js";
+import reportRepository from "../repositories/reportRepository.js";
 
-const obtenerEstadisticas = async (userId) => {
+const obtenerEstadisticas = async (userId, rol) => {
   const [{ citas, minutos, conexiones }, otrosIds] = await Promise.all([
     callHistoryRepository.estadisticasPorUsuario(userId),
     outcomeRepository.listarMatchesPorUsuario(userId),
@@ -19,7 +20,13 @@ const obtenerEstadisticas = async (userId) => {
     red_social_usuario: p?.red_social_usuario ?? null,
   }));
 
-  return { citas, minutos, conexiones, matches };
+  const resultado = { citas, minutos, conexiones, matches };
+
+  if (rol === "ADMIN") {
+    resultado.reportes = await reportRepository.listarRecientes(10);
+  }
+
+  return resultado;
 };
 
 export default { obtenerEstadisticas };

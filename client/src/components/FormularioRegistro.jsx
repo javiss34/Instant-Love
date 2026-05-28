@@ -5,55 +5,94 @@ import InputFormulario from "./ui/InputFormulario.jsx";
 import SelectFormulario from "./ui/SelectFormulario.jsx";
 import BotonPrimario from "./ui/BotonPrimario.jsx";
 import logo from "../assets/logo-instant-love.png";
+import {
+  esquemaRegistro,
+  esquemaRegistroPaso1,
+} from "../biblioteca/validaciones/sesionEsquemas.js";
+import MostrarError from "./ui/MostrarError.jsx";
 
-const datosRegistroInicial = {
-  username: "",
-  nombre: "",
-  email: "",
-  password: "",
-  fecha_nacimiento: "",
-  genero: "",
-  preferencia_genero: "",
-  red_social_tipo: "",
-  red_social_nombre: "",
-  red_social_usuario: "",
-};
 
 const FormularioRegistro = () => {
+  const datosRegistroInicial = {
+    username: "",
+    nombre: "",
+    email: "",
+    password: "",
+    fecha_nacimiento: "",
+    genero: "",
+    preferencia_genero: "",
+    red_social_tipo: "",
+    red_social_nombre: "",
+    red_social_usuario: "",
+  };
   const [datos, setDatos] = useState(datosRegistroInicial);
-  const [paso, setPaso] = useState(1);
-  const [mensajeError, setMensajeError] = useState(null);
+  //Ya que el formulario de registro tiene muchos campos, vamos a dividirlo en dos pantallas, la primera para datos de sesión y la segunda para datos de perfil.
+  const [paso, setPaso] = useState(1); //Para eso sirve este estado.
+  const [errores, setErrores] = useState({});
   const { registrar, cargando } = useSesion();
 
   const actualizarDato = (e) => {
     const { name, value } = e.target;
-    setMensajeError(null);
+    setErrores({});
     setDatos({ ...datos, [name]: value });
   };
 
   const avanzar = (e) => {
     e.preventDefault();
-    setMensajeError(null);
+    setErrores({});
+    const resultado = esquemaRegistroPaso1.safeParse(datos);
+    if (!resultado.success) {
+      const nuevosErrores = {};
+      resultado.error.issues.forEach(({ path, message }) => {
+        nuevosErrores[path[0]] = message;
+      });
+      setErrores(nuevosErrores);
+      return;
+    }
     setPaso(2);
   };
 
   const enviar = async (e) => {
     e.preventDefault();
-    setMensajeError(null);
+    setErrores({});
+
+    const datosAEnviar = { ...datos };
+
     try {
-      const datosAEnviar = { ...datos };
+      //Si el usuario elige otra red social, aparece un campo extra
       if (datos.red_social_tipo === "OTRO") {
+        //ya que en la base de datos solo existe una columna red_social_usuario, combinamos los dos campos antes de enviarlo al backend.
         datosAEnviar.red_social_usuario = `${datos.red_social_nombre}: ${datos.red_social_usuario}`;
       }
-      await registrar(datosAEnviar);
+
+      const resultado = esquemaRegistro.safeParse(datosAEnviar);
+      if (!resultado.success) {
+        const nuevosErrores = {};
+        //De esta forma recorremos los errores y los metemos en el objeto que acabamos de crear
+        resultado.error.issues.forEach(({ path, message }) => {
+          nuevosErrores[path[0]] = message;
+        });
+        setErrores(nuevosErrores);
+        return;
+      }
+      await registrar(resultado.data);
       setDatos(datosRegistroInicial);
     } catch (err) {
-      if (err.name === "ZodError") {
-        setMensajeError(err.issues?.[0]?.message ?? "Datos del formulario no válidos.");
-      } else if (err.response?.data?.mensaje) {
-        setMensajeError(err.response.data.mensaje);
+      const mensaje = err.response?.data?.mensaje ?? "Error inesperado.";
+      //Como en el paso 1 no hay validación con el servidor, implementamos esta lógica:
+      //Si llega un error del backend por el email, por ejemplo porque ya esta en uso, le llevamos de vuelta al paso1
+      // y establecemos el error a email, para que se muestre rojo el input.
+      if (mensaje.toLowerCase().includes("email")) {
+        setPaso(1);
+        setErrores({ email: mensaje });
+      //Si llega un error del backend por el nombre de usuario, por ejemplo porque ya esta en uso, le llevamos de vuelta al paso1
+      // y establecemos el error a usuario, para que se muestre rojo el input.
+      } else if (mensaje.toLowerCase().includes("usuario")) {
+        setPaso(1);
+        setErrores({ username: mensaje });
+      //Si es otro error se muestra en general, al final del formulario
       } else {
-        setMensajeError("Ha ocurrido un error inesperado. Inténtalo de nuevo.");
+        setErrores({ general: mensaje });
       }
     }
   };
@@ -68,11 +107,17 @@ const FormularioRegistro = () => {
         />
         <h1 className="text-3xl font-bold text-rose-500">InstantLove</h1>
         <p className="text-gray-500 mt-2 text-sm">
-          {paso === 1 ? "Crea tu cuenta y empieza a conocer gente" : "Cuéntanos un poco más sobre ti"}
+          {paso === 1
+            ? "Crea tu cuenta y empieza a conocer gente"
+            : "Cuéntanos un poco más sobre ti"}
         </p>
         <div className="flex justify-center gap-2 mt-4">
-          <div className={`h-1.5 w-8 rounded-full ${paso === 1 ? "bg-rose-500" : "bg-rose-200"}`} />
-          <div className={`h-1.5 w-8 rounded-full ${paso === 2 ? "bg-rose-500" : "bg-rose-200"}`} />
+          <div
+            className={`h-1.5 w-8 rounded-full ${paso === 1 ? "bg-rose-500" : "bg-rose-200"}`}
+          />
+          <div
+            className={`h-1.5 w-8 rounded-full ${paso === 2 ? "bg-rose-500" : "bg-rose-200"}`}
+          />
         </div>
       </div>
 
@@ -86,7 +131,7 @@ const FormularioRegistro = () => {
             value={datos.username}
             onChange={actualizarDato}
             placeholder="ej: juan_lopez"
-            required
+            error={errores.username}
           />
 
           <InputFormulario
@@ -97,7 +142,7 @@ const FormularioRegistro = () => {
             value={datos.nombre}
             onChange={actualizarDato}
             placeholder="Tu nombre"
-            required
+            error={errores.nombre}
           />
 
           <InputFormulario
@@ -108,7 +153,7 @@ const FormularioRegistro = () => {
             value={datos.email}
             onChange={actualizarDato}
             placeholder="tu@email.com"
-            required
+            error={errores.email}
           />
 
           <InputFormulario
@@ -119,7 +164,7 @@ const FormularioRegistro = () => {
             value={datos.password}
             onChange={actualizarDato}
             placeholder="Mínimo 6 caracteres"
-            required
+            error={errores.password}
           />
 
           <InputFormulario
@@ -129,12 +174,12 @@ const FormularioRegistro = () => {
             type="date"
             value={datos.fecha_nacimiento}
             onChange={actualizarDato}
-            required
+            error={errores.fecha_nacimiento}
           />
 
-          <BotonPrimario type="submit">
-            Siguiente →
-          </BotonPrimario>
+          <MostrarError objetoErrores={{ general: errores.general }} />
+
+          <BotonPrimario type="submit">Siguiente →</BotonPrimario>
         </form>
       ) : (
         <form onSubmit={enviar} className="flex flex-col gap-5">
@@ -144,7 +189,7 @@ const FormularioRegistro = () => {
             label="Género"
             value={datos.genero}
             onChange={actualizarDato}
-            required
+            error={errores.genero}
           >
             <option value="">Selecciona una opción</option>
             <option value="H">Hombre</option>
@@ -158,7 +203,7 @@ const FormularioRegistro = () => {
             label="Me interesan"
             value={datos.preferencia_genero}
             onChange={actualizarDato}
-            required
+            error={errores.preferencia_genero}
           >
             <option value="">Selecciona una opción</option>
             <option value="H">Hombres</option>
@@ -172,7 +217,7 @@ const FormularioRegistro = () => {
             label="Red social"
             value={datos.red_social_tipo}
             onChange={actualizarDato}
-            required
+            error={errores.red_social_tipo}
           >
             <option value="">Selecciona una opción</option>
             <option value="INSTAGRAM">Instagram</option>
@@ -190,7 +235,7 @@ const FormularioRegistro = () => {
               value={datos.red_social_nombre}
               onChange={actualizarDato}
               placeholder="ej: Telegram, Snapchat..."
-              required
+              error={errores.red_social_nombre}
             />
           )}
 
@@ -202,14 +247,10 @@ const FormularioRegistro = () => {
             value={datos.red_social_usuario}
             onChange={actualizarDato}
             placeholder="@tu_usuario"
-            required
+            error={errores.red_social_usuario}
           />
 
-          {mensajeError && (
-            <p className="text-sm text-center text-red-600 bg-red-50 rounded-lg py-2 px-3">
-              {mensajeError}
-            </p>
-          )}
+          <MostrarError objetoErrores={{ general: errores.general }} />
 
           <BotonPrimario type="submit" disabled={cargando}>
             {cargando ? "Creando cuenta..." : "Crear cuenta"}

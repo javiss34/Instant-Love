@@ -1,337 +1,231 @@
-import { useState, useEffect } from "react";
-import usePerfiles from "../hooks/usePerfiles.js";
-import useSesion from "../hooks/useSesion.js";
-import InputFormulario from "./ui/InputFormulario.jsx";
-import SelectFormulario from "./ui/SelectFormulario.jsx";
+import { useState } from "react";
+import { esquemaPerfil } from "../biblioteca/validaciones/sesionEsquemas.js";
 import BotonPrimario from "./ui/BotonPrimario.jsx";
 
-const etiquetaGenero = { H: "Hombre", M: "Mujer", O: "Otro" };
-const etiquetaPreferencia = { H: "Hombres", M: "Mujeres", AMBOS: "Ambos" };
-const etiquetaRedSocial = {
-  INSTAGRAM: "Instagram",
-  WHATSAPP: "WhatsApp",
-  "TIK TOK": "TikTok",
-  OTRO: "Otro",
-};
-
-const datosPerfilInicial = {
-  nombre: "",
-  preferencia_genero: "",
-  red_social_tipo: "",
-  red_social_nombre: "",
-  red_social_usuario: "",
-};
-
-const FormularioPerfil = () => {
-  const { perfilPropio, actualizarPerfilPropio, cargando, error } = usePerfiles();
-  const { eliminarCuenta, cargando: cargandoSesion } = useSesion();
-  const [datos, setDatos] = useState(datosPerfilInicial);
-  const [modoEdicion, setModoEdicion] = useState(false);
-  const [mensajeError, setMensajeError] = useState(null);
-  const [mensajeExito, setMensajeExito] = useState(false);
-  const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
-
-  useEffect(() => {
-    if (perfilPropio) {
-      const tipo = perfilPropio.red_social_tipo ?? "";
-      const usuarioRaw = perfilPropio.red_social_usuario ?? "";
-      const partes = tipo === "OTRO" && usuarioRaw.includes(": ")
-        ? usuarioRaw.split(": ")
-        : null;
-      setDatos({
-        nombre: perfilPropio.nombre ?? "",
-        preferencia_genero: perfilPropio.preferencia_genero ?? "",
-        red_social_tipo: tipo,
-        red_social_nombre: partes ? partes[0] : "",
-        red_social_usuario: partes ? partes.slice(1).join(": ") : usuarioRaw,
-      });
-    }
-  }, [perfilPropio]);
+//Pasamos todos los datos por props, así aquí no hay que llamar a ningún hook.
+const FormularioPerfil = ({
+  datosIniciales,
+  alGuardar,
+  alCancelar,
+  cargando,
+  confirmandoEliminar,
+  iniciarEliminacion,
+  cancelarEliminacion,
+  ejecutarEliminacion,
+  cargandoSesion,
+}) => {
+  const [datos, setDatos] = useState(datosIniciales);
+  const [errores, setErrores] = useState({});
 
   const actualizarDato = (e) => {
     const { name, value } = e.target;
-    setMensajeError(null);
+    setErrores((prev) => ({ ...prev, [name]: "" }));
     setDatos({ ...datos, [name]: value });
   };
 
-  const enviar = async (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
-    setMensajeError(null);
-    setMensajeExito(false);
-    try {
-      const datosAEnviar = { ...datos };
-      if (datos.red_social_tipo === "OTRO") {
-        datosAEnviar.red_social_usuario = `${datos.red_social_nombre}: ${datos.red_social_usuario}`;
-      }
-      const ok = await actualizarPerfilPropio(datosAEnviar);
-      if (ok) {
-        setModoEdicion(false);
-        setMensajeExito(true);
-        setTimeout(() => setMensajeExito(false), 3000);
-      }
-    } catch (err) {
-      setMensajeError(
-        err.response?.data?.mensaje ??
-          "No se pudo guardar los cambios. Inténtalo de nuevo.",
-      );
+    setErrores({});
+
+    const datosAEnviar = { ...datos };
+    if (datos.red_social_tipo === "OTRO") {
+      datosAEnviar.red_social_usuario = `${datos.red_social_nombre}: ${datos.red_social_usuario}`;
     }
+    //Aquí no hace falta usar truy/catch ya que se hara en MiPerfil.jsx
+    const resultado = esquemaPerfil.safeParse(datosAEnviar);
+
+    if (!resultado.success) {
+      const nuevosErrores = {};
+      resultado.error.issues.forEach(({ path, message }) => {
+        nuevosErrores[path[0]] = message;
+      });
+      setErrores(nuevosErrores);
+      return;
+    }
+
+    alGuardar(resultado.data);
   };
-
-  const cancelar = () => {
-    setDatos({
-      nombre: perfilPropio?.nombre ?? "",
-      preferencia_genero: perfilPropio?.preferencia_genero ?? "",
-      red_social_tipo: perfilPropio?.red_social_tipo ?? "",
-      red_social_usuario: perfilPropio?.red_social_usuario ?? "",
-    });
-    setMensajeError(null);
-    setModoEdicion(false);
-  };
-
-  if (!perfilPropio && error) {
-    return (
-      <div className="flex-1 flex items-center justify-center p-4">
-        <p className="text-red-500">No se pudo cargar el perfil.</p>
-      </div>
-    );
-  }
-
-  if (!perfilPropio) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <p className="text-rose-400 text-lg animate-pulse">
-          Cargando perfil...
-        </p>
-      </div>
-    );
-  }
-
-  const inicial = perfilPropio.nombre?.[0].toUpperCase();
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-12 w-full">
-      {/* Cabecera del perfil */}
-      <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-8 mb-6 flex flex-col sm:flex-row items-center gap-6">
-        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-4xl font-bold shadow-md shrink-0">
-          {inicial}
-        </div>
-        <div className="text-center sm:text-left flex-1">
-          <h1 className="text-3xl font-extrabold text-gray-800">
-            {perfilPropio.nombre}
-          </h1>
-          <p className="text-gray-400 mt-1">{perfilPropio.User?.email}</p>
-          <span className="inline-block mt-2 text-xs font-semibold uppercase tracking-wide bg-rose-100 text-rose-600 px-3 py-1 rounded-full">
-            {perfilPropio.User?.rol === "ADMIN" ? "Administrador" : "Usuario"}
+    <form onSubmit={manejarEnvio} className="flex flex-col gap-5">
+      <div className="flex flex-col gap-1">
+        <label htmlFor="nombre" className="text-sm font-semibold text-gray-700">
+          Nombre
+        </label>
+        <input
+          id="nombre"
+          name="nombre"
+          type="text"
+          value={datos.nombre}
+          onChange={actualizarDato}
+          className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-rose-400"
+        />
+        {errores.nombre && (
+          <span className="text-red-500 text-xs mt-1">{errores.nombre}</span>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label
+          htmlFor="preferencia_genero"
+          className="text-sm font-semibold text-gray-700"
+        >
+          Me interesan
+        </label>
+        <select
+          id="preferencia_genero"
+          name="preferencia_genero"
+          value={datos.preferencia_genero}
+          onChange={actualizarDato}
+          className="w-full border border-gray-300 rounded-xl p-3 bg-white focus:outline-none focus:border-rose-400"
+        >
+          <option value="">Selecciona una opción</option>
+          <option value="H">Hombres</option>
+          <option value="M">Mujeres</option>
+          <option value="AMBOS">Ambos</option>
+        </select>
+        {errores.preferencia_genero && (
+          <span className="text-red-500 text-xs mt-1">
+            {errores.preferencia_genero}
           </span>
-        </div>
+        )}
       </div>
 
-      {/* Feedback */}
-      {mensajeExito && (
-        <div className="mb-4 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3">
-          ✅ Perfil actualizado correctamente.
-        </div>
-      )}
-      {mensajeError && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-600 text-sm rounded-xl px-4 py-3">
-          {mensajeError}
-        </div>
-      )}
-
-      {/* Información de solo lectura */}
-      <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-8 mb-6">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-5">
-          Información de tu cuenta
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-rose-50 rounded-2xl p-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
-              Género
-            </p>
-            <p className="text-gray-800 font-semibold">
-              {etiquetaGenero[perfilPropio.genero] ?? "—"}
-            </p>
-          </div>
-          <div className="bg-orange-50 rounded-2xl p-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
-              Fecha de nacimiento
-            </p>
-            <p className="text-gray-800 font-semibold">
-              {perfilPropio.fecha_nacimiento
-                ? new Date(perfilPropio.fecha_nacimiento).toLocaleDateString(
-                    "es-ES",
-                  )
-                : "—"}
-            </p>
-          </div>
-        </div>
+      <div className="flex flex-col gap-1">
+        <label
+          htmlFor="red_social_tipo"
+          className="text-sm font-semibold text-gray-700"
+        >
+          Red social
+        </label>
+        <select
+          id="red_social_tipo"
+          name="red_social_tipo"
+          value={datos.red_social_tipo}
+          onChange={actualizarDato}
+          className="w-full border border-gray-300 rounded-xl p-3 bg-white focus:outline-none focus:border-rose-400"
+        >
+          <option value="">Selecciona una opción</option>
+          <option value="INSTAGRAM">Instagram</option>
+          <option value="WHATSAPP">WhatsApp</option>
+          <option value="TIK TOK">TikTok</option>
+          <option value="OTRO">Otro</option>
+        </select>
+        {errores.red_social_tipo && (
+          <span className="text-red-500 text-xs mt-1">
+            {errores.red_social_tipo}
+          </span>
+        )}
       </div>
 
-      {/* Sección editable */}
-      <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-8">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-5">
-          {modoEdicion ? "Editando perfil" : "Preferencias y contacto"}
-        </h2>
+      {datos.red_social_tipo === "OTRO" && (
+        <div className="flex flex-col gap-1">
+          <label
+            htmlFor="red_social_nombre"
+            className="text-sm font-semibold text-gray-700"
+          >
+            ¿Cuál red social?
+          </label>
+          <input
+            id="red_social_nombre"
+            name="red_social_nombre"
+            type="text"
+            value={datos.red_social_nombre}
+            onChange={actualizarDato}
+            placeholder="ej: Telegram, Snapchat..."
+            className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-rose-400"
+          />
+          {errores.red_social_nombre && (
+            <span className="text-red-500 text-xs mt-1">
+              {errores.red_social_nombre}
+            </span>
+          )}
+        </div>
+      )}
 
-        {modoEdicion ? (
-          <form onSubmit={enviar} className="flex flex-col gap-5">
-            <InputFormulario
-              id="nombre"
-              name="nombre"
-              label="Nombre"
-              type="text"
-              value={datos.nombre}
-              onChange={actualizarDato}
-              required
-            />
+      <div className="flex flex-col gap-1">
+        <label
+          htmlFor="red_social_usuario"
+          className="text-sm font-semibold text-gray-700"
+        >
+          Usuario / número
+        </label>
+        <input
+          id="red_social_usuario"
+          name="red_social_usuario"
+          type="text"
+          value={datos.red_social_usuario}
+          onChange={actualizarDato}
+          placeholder="@tu_usuario"
+          className="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:border-rose-400"
+        />
+        {errores.red_social_usuario && (
+          <span className="text-red-500 text-xs mt-1">
+            {errores.red_social_usuario}
+          </span>
+        )}
+      </div>
 
-            <SelectFormulario
-              id="preferencia_genero"
-              name="preferencia_genero"
-              label="Me interesan"
-              value={datos.preferencia_genero}
-              onChange={actualizarDato}
+      {/* Botones de acción del formulario */}
+      <div className="pt-4 mt-2 border-t border-gray-100">
+        {!confirmandoEliminar ? (
+          <div className="flex flex-wrap gap-3 items-center">
+            <BotonPrimario
+              type="submit"
+              disabled={cargando}
+              className="flex-1 sm:flex-none px-6"
             >
-              <option value="">Selecciona una opción</option>
-              <option value="H">Hombres</option>
-              <option value="M">Mujeres</option>
-              <option value="AMBOS">Ambos</option>
-            </SelectFormulario>
-
-            <SelectFormulario
-              id="red_social_tipo"
-              name="red_social_tipo"
-              label="Red social"
-              value={datos.red_social_tipo}
-              onChange={actualizarDato}
-              required
+              {cargando ? "Guardando..." : "💾 Guardar cambios"}
+            </BotonPrimario>
+            <BotonPrimario
+              type="button"
+              onClick={alCancelar}
+              variante="secundario"
+              className="flex-1 sm:flex-none px-6"
             >
-              <option value="">Selecciona una opción</option>
-              <option value="INSTAGRAM">Instagram</option>
-              <option value="WHATSAPP">WhatsApp</option>
-              <option value="TIK TOK">TikTok</option>
-              <option value="OTRO">Otro</option>
-            </SelectFormulario>
-
-            {datos.red_social_tipo === "OTRO" && (
-              <InputFormulario
-                id="red_social_nombre"
-                name="red_social_nombre"
-                label="¿Cuál red social?"
-                type="text"
-                value={datos.red_social_nombre}
-                onChange={actualizarDato}
-                placeholder="ej: Telegram, Snapchat..."
-                required
-              />
-            )}
-
-            <InputFormulario
-              id="red_social_usuario"
-              name="red_social_usuario"
-              label="Usuario / número"
-              type="text"
-              value={datos.red_social_usuario}
-              onChange={actualizarDato}
-              placeholder="@tu_usuario"
-              required
-            />
-
-            <div className="flex gap-3 pt-2">
+              Cancelar
+            </BotonPrimario>
+            {/* El ml-auto empuja este botón a la derecha en pantallas grandes */}
+            <BotonPrimario
+              type="button"
+              onClick={iniciarEliminacion}
+              variante="peligro"
+              className="w-full sm:w-auto sm:ml-auto px-6"
+            >
+              Eliminar cuenta
+            </BotonPrimario>
+          </div>
+        ) : (
+          <div className="bg-red-50 rounded-2xl p-6 border border-red-200 mt-2">
+            <p className="text-gray-800 font-bold mb-1">
+              ¿Seguro que quieres eliminar tu cuenta?
+            </p>
+            <p className="text-gray-500 text-sm mb-5">
+              Esta acción borrará todos tus datos de forma permanente.
+            </p>
+            <div className="flex flex-wrap gap-3">
               <BotonPrimario
-                type="submit"
-                disabled={cargando}
-                className="flex-1"
+                type="button"
+                variante="peligro"
+                onClick={ejecutarEliminacion}
+                disabled={cargandoSesion}
+                className="flex-1 sm:flex-none px-6"
               >
-                {cargando ? "Guardando..." : "💾 Guardar cambios"}
+                {cargandoSesion ? "Eliminando..." : "Sí, eliminar"}
               </BotonPrimario>
               <BotonPrimario
                 type="button"
-                onClick={cancelar}
                 variante="secundario"
-                className="flex-1"
+                onClick={cancelarEliminacion}
+                className="flex-1 sm:flex-none px-6"
               >
                 Cancelar
               </BotonPrimario>
             </div>
-          </form>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-pink-50 rounded-2xl p-4">
-              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
-                Me interesan
-              </p>
-              <p className="text-gray-800 font-semibold">
-                {etiquetaPreferencia[perfilPropio.preferencia_genero] ?? "—"}
-              </p>
-            </div>
-            <div className="bg-rose-50 rounded-2xl p-4">
-              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
-                Red social
-              </p>
-              <p className="text-gray-800 font-semibold">
-                {perfilPropio.red_social_tipo
-                  ? etiquetaRedSocial[perfilPropio.red_social_tipo]
-                  : "—"}
-              </p>
-            </div>
-            <div className="bg-orange-50 rounded-2xl p-4 sm:col-span-2">
-              <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
-                Usuario / número
-              </p>
-              <p className="text-gray-800 font-semibold">
-                {perfilPropio.red_social_usuario || "—"}
-              </p>
-            </div>
           </div>
         )}
-
-        <div className="border-t border-gray-100 mt-8 pt-6">
-          {!confirmandoEliminar ? (
-            <div className="flex gap-3 justify-center">
-              {!modoEdicion && (
-                <BotonPrimario
-                  variante="secundario"
-                  onClick={() => setModoEdicion(true)}
-                  className="!w-auto px-6"
-                >
-                  ✏️ Editar perfil
-                </BotonPrimario>
-              )}
-              <BotonPrimario
-                variante="peligro"
-                onClick={() => setConfirmandoEliminar(true)}
-                className="!w-auto px-6"
-              >
-                Eliminar cuenta
-              </BotonPrimario>
-            </div>
-          ) : (
-            <>
-              <p className="text-gray-800 font-semibold mb-1">¿Seguro que quieres eliminar tu cuenta?</p>
-              <p className="text-gray-500 text-sm mb-5">Esta acción es permanente y no se puede deshacer.</p>
-              <div className="flex gap-3">
-                <BotonPrimario
-                  variante="peligro"
-                  onClick={eliminarCuenta}
-                  disabled={cargandoSesion}
-                  className="!w-auto px-6"
-                >
-                  {cargandoSesion ? "Eliminando..." : "Sí, eliminar"}
-                </BotonPrimario>
-                <BotonPrimario
-                  variante="secundario"
-                  onClick={() => setConfirmandoEliminar(false)}
-                  className="!w-auto px-6"
-                >
-                  Cancelar
-                </BotonPrimario>
-              </div>
-            </>
-          )}
-        </div>
       </div>
-    </div>
+    </form>
   );
 };
 
