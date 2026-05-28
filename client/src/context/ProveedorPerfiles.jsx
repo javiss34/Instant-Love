@@ -28,6 +28,20 @@ const ProveedorPerfiles = ({ children }) => {
     return false;
   };
 
+  const subirFotoPerfil = async (archivo) => {
+    const formData = new FormData();
+    formData.append("file", archivo);
+    formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+    //Como es una llamada externa en vez de a apiClient, utilizamos fetch
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      { method: "POST", body: formData },
+    );
+    const datos = await res.json();
+    if (!datos.secure_url) throw new Error("Cloudinary no devolvió URL");
+    await actualizarPerfilPropio({ foto: datos.secure_url });
+  };
+
   useEffect(() => {
     if (sesionIniciada) {
       obtenerPerfilPropio();
@@ -42,6 +56,7 @@ const ProveedorPerfiles = ({ children }) => {
     error,
     obtenerPerfilPropio,
     actualizarPerfilPropio,
+    subirFotoPerfil,
   };
 
   return (

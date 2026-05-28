@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import useEstadisticas from "../hooks/useEstadisticas.js";
 
-const coloresEstado = {
-  PENDIENTE: "bg-yellow-100 text-yellow-700",
-  REVISADO: "bg-blue-100 text-blue-700",
-  SANCIONADO: "bg-red-100 text-red-600",
-};
 
 const Estadisticas = () => {
+  const coloresEstado = {
+    PENDIENTE: "bg-yellow-100 text-yellow-700",
+    REVISADO: "bg-blue-100 text-blue-700",
+    SANCIONADO: "bg-red-100 text-red-600",
+  };
   const { estadisticas, cargando } = useEstadisticas();
 
   const datos = [

@@ -20,6 +20,11 @@ const finalizarLlamada = async (req, res) => {
   });
 };
 
+const obtenerLlamada = async (req, res) => {
+  const llamada = await callService.obtenerParticipante(req.params.id, req.usuario.id);
+  res.status(200).json(llamada);
+};
+
 const unirseAColaBusqueda = async (req, res) => {
   const resultado = await callService.unirseACola(req.usuario.id);
   res.status(200).json(resultado);
@@ -33,6 +38,7 @@ const comprobarEstadoCola = (req, res) => {
 export {
   iniciarLlamada,
   finalizarLlamada,
+  obtenerLlamada,
   unirseAColaBusqueda,
   comprobarEstadoCola,
 };

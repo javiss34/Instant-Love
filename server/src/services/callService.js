@@ -75,6 +75,24 @@ const unirseACola = async (userId) => {
   return { status: "match_encontrado", llamadaId: llamada.id };
 };
 
+const obtenerParticipante = async (callId, usuarioId) => {
+  const llamada = await callHistoryRepository.buscarConParticipantes(callId);
+  if (!llamada) throw new ApiError(404, "Llamada no encontrada");
+
+  const esParticipante =
+    llamada.user1Id === usuarioId || llamada.user2Id === usuarioId;
+  if (!esParticipante) throw new ApiError(403, "No eres participante de esta llamada");
+
+  const otro =
+    llamada.user1Id === usuarioId ? llamada.Receptor : llamada.Emisor;
+
+  return {
+    id: otro?.id ?? null,
+    username: otro?.username ?? null,
+    nombre: otro?.Profile?.nombre ?? null,
+  };
+};
+
 const comprobarEstadoCola = (userId) => {
   const llamadaId = colaEspera.obtenerResultado(userId);
   if (llamadaId) {
@@ -84,4 +102,4 @@ const comprobarEstadoCola = (userId) => {
   return { status: "buscando" };
 };
 
-export default { iniciar, finalizar, unirseACola, comprobarEstadoCola };
+export default { iniciar, finalizar, obtenerParticipante, unirseACola, comprobarEstadoCola };

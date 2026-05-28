@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import useSesion from "../hooks/useSesion.js";
 import useVideollamada from "../hooks/useVideollamada.js";
@@ -18,12 +18,24 @@ const Llamada = () => {
     modal,
     tiempoRestante,
     temporizadorActivo,
+    otroUsuario,
     unirseASala,
     salir,
     pedirMatch,
     responderMatch,
+    enviarReporte,
   } = useVideollamada();
   const contenedorRef = useRef(null);
+
+  const motivosReporte = [
+    "Comportamiento inapropiado",
+    "Acoso o intimidación",
+    "Contenido sexual no deseado",
+    "Lenguaje ofensivo o discriminatorio",
+    "Otro",
+  ];
+
+  const [modalReporte, setModalReporte] = useState({ visible: false, motivo: motivosReporte[0], enviando: false, enviado: false });
 
   useEffect(() => {
     if (contenedorRef.current && usuario) {
@@ -63,21 +75,31 @@ const Llamada = () => {
         <div className="w-full h-full" ref={contenedorRef} />
       </div>
 
-      <div className="shrink-0 flex items-center justify-center gap-4 p-4 bg-slate-800 border-t border-slate-700">
+      <div className="shrink-0 flex items-center justify-between gap-4 p-4 bg-slate-800 border-t border-slate-700">
         <button
-          onClick={() => pedirMatch(id, "salir")}
-          disabled={colgando}
-          className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => setModalReporte((prev) => ({ ...prev, visible: true }))}
+          disabled={colgando || !otroUsuario}
+          className="text-slate-400 hover:text-rose-400 text-sm font-medium px-3 py-2 rounded-lg hover:bg-slate-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          title="Reportar usuario"
         >
-          {colgando ? "Saliendo..." : "Salir"}
+          🚩 Reportar
         </button>
-        <button
-          onClick={() => pedirMatch(id, "siguiente")}
-          disabled={colgando}
-          className="bg-white text-gray-800 font-semibold px-8 py-3 rounded-xl shadow-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Siguiente ⏭️
-        </button>
+        <div className="flex gap-4">
+          <button
+            onClick={() => pedirMatch(id, "salir")}
+            disabled={colgando}
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {colgando ? "Saliendo..." : "Salir"}
+          </button>
+          <button
+            onClick={() => pedirMatch(id, "siguiente")}
+            disabled={colgando}
+            className="bg-white text-gray-800 font-semibold px-8 py-3 rounded-xl shadow-lg hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Siguiente ⏭️
+          </button>
+        </div>
       </div>
 
       {modal.visible && (
@@ -104,6 +126,68 @@ const Llamada = () => {
                 Siguiente ⏭️
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {modalReporte.visible && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl">
+            {modalReporte.enviado ? (
+              <div className="text-center">
+                <div className="text-4xl mb-3">✅</div>
+                <p className="text-gray-800 font-bold text-lg">Reporte enviado</p>
+                <p className="text-gray-500 text-sm mt-1 mb-6">Nuestro equipo lo revisará pronto.</p>
+                <button
+                  onClick={() => setModalReporte({ visible: false, motivo: motivosReporte[0], enviando: false, enviado: false })}
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors"
+                >
+                  Cerrar
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="text-3xl mb-3">🚩</div>
+                <h2 className="text-lg font-bold text-gray-800 mb-1">
+                  ¿Seguro que quieres reportar a {otroUsuario?.nombre ?? otroUsuario?.username}?
+                </h2>
+                <p className="text-gray-500 text-sm mb-5">
+                  Selecciona el motivo del reporte.
+                </p>
+                <select
+                  value={modalReporte.motivo}
+                  onChange={(e) => setModalReporte((prev) => ({ ...prev, motivo: e.target.value }))}
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-700 text-sm mb-5 focus:outline-none focus:ring-2 focus:ring-rose-300"
+                >
+                  {motivosReporte.map((m) => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+                <div className="flex gap-3">
+                  <button
+                    onClick={async () => {
+                      setModalReporte((prev) => ({ ...prev, enviando: true }));
+                      try {
+                        await enviarReporte(id, otroUsuario.id, modalReporte.motivo);
+                        setModalReporte((prev) => ({ ...prev, enviando: false, enviado: true }));
+                      } catch {
+                        setModalReporte((prev) => ({ ...prev, enviando: false }));
+                      }
+                    }}
+                    disabled={modalReporte.enviando}
+                    className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    {modalReporte.enviando ? "Enviando..." : "Sí, reportar"}
+                  </button>
+                  <button
+                    onClick={() => setModalReporte({ visible: false, motivo: motivosReporte[0], enviando: false, enviado: false })}
+                    disabled={modalReporte.enviando}
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors disabled:opacity-50"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

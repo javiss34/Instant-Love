@@ -1,8 +1,27 @@
 import { Op } from "sequelize";
-import { CallHistory } from "../models/index.js";
+import { CallHistory, User, Profile } from "../models/index.js";
 
 const buscarPorId = (id) => {
   return CallHistory.findByPk(id);
+};
+
+const buscarConParticipantes = (id) => {
+  return CallHistory.findByPk(id, {
+    include: [
+      {
+        model: User,
+        as: "Emisor",
+        attributes: ["id", "username"],
+        include: [{ model: Profile, attributes: ["nombre"] }],
+      },
+      {
+        model: User,
+        as: "Receptor",
+        attributes: ["id", "username"],
+        include: [{ model: Profile, attributes: ["nombre"] }],
+      },
+    ],
+  });
 };
 
 const estadisticasPorUsuario = async (userId) => {
@@ -33,4 +52,4 @@ const actualizarPorId = async (id, campos) => {
   return buscarPorId(id);
 };
 
-export default { buscarPorId, crear, actualizarPorId, estadisticasPorUsuario };
+export default { buscarPorId, buscarConParticipantes, crear, actualizarPorId, estadisticasPorUsuario };

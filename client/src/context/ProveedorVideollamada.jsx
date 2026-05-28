@@ -16,6 +16,7 @@ const ProveedorVideollamada = ({ children }) => {
   const [modal, setModal] = useState(modalInicial);
   const [tiempoRestante, setTiempoRestante] = useState(DURACION_LLAMADA_SEGUNDOS);
   const [temporizadorActivo, setTemporizadorActivo] = useState(false);
+  const [otroUsuario, setOtroUsuario] = useState(null);
 
   const frameRef = useRef(null);
   const intervaloTemporizadorRef = useRef(null);
@@ -58,12 +59,20 @@ const ProveedorVideollamada = ({ children }) => {
     }, 1000);
   };
 
-  const unirseASala = (contenedor, usuario, idLlamada) => {
+  const unirseASala = async (contenedor, usuario, idLlamada) => {
     if (!contenedor || frameRef.current) return;
     setAvisoCamara(false);
+    setOtroUsuario(null);
     setTiempoRestante(DURACION_LLAMADA_SEGUNDOS);
     tiempoRestanteRef.current = DURACION_LLAMADA_SEGUNDOS;
     idLlamadaRef.current = idLlamada;
+
+    try {
+      const datos = await ejecutar(apiClient.get(`/llamadas/${idLlamada}`));
+      setOtroUsuario(datos);
+    } catch {
+      // no bloqueamos la llamada si falla
+    }
 
     const frame = DailyIframe.createFrame(contenedor, {
       iframeStyle: { width: "100%", height: "100%", border: "none" },
@@ -152,16 +161,24 @@ const ProveedorVideollamada = ({ children }) => {
     await finalizarYNavegar(idLlamada, destino);
   };
 
+  const enviarReporte = async (callId, acusadoId, motivo) => {
+    await ejecutar(
+      apiClient.post("/reportes", { acusadoId, callId, motivo }),
+    );
+  };
+
   const datosAProveer = {
     avisoCamara,
     colgando,
     modal,
     tiempoRestante,
     temporizadorActivo,
+    otroUsuario,
     unirseASala,
     salir,
     pedirMatch,
     responderMatch,
+    enviarReporte,
   };
 
   return (

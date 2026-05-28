@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import usePerfiles from "../hooks/usePerfiles.js";
 import useSesion from "../hooks/useSesion.js";
 import FormularioPerfil from "../components/FormularioPerfil.jsx";
@@ -14,7 +14,7 @@ const MiPerfil = () => {
     OTRO: "Otro",
   };
 
-  const { perfilPropio, actualizarPerfilPropio, cargando, error } =
+  const { perfilPropio, actualizarPerfilPropio, subirFotoPerfil, cargando, error } =
     usePerfiles();
   const { eliminarCuenta, cargando: cargandoSesion } = useSesion();
 
@@ -22,6 +22,20 @@ const MiPerfil = () => {
   const [datosParaFormulario, setDatosParaFormulario] = useState(null);
   const [mensajeExito, setMensajeExito] = useState(false);
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
+  const [subiendoFoto, setSubiendoFoto] = useState(false);
+  const inputFotoRef = useRef(null);
+
+  const subirFoto = async (e) => {
+    const archivo = e.target.files?.[0];
+    if (!archivo) return;
+    setSubiendoFoto(true);
+    try {
+      await subirFotoPerfil(archivo);
+    } finally {
+      setSubiendoFoto(false);
+      e.target.value = "";
+    }
+  };
 
   useEffect(() => {
     if (perfilPropio) {
@@ -78,9 +92,35 @@ const MiPerfil = () => {
     <div className="flex-1 bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50 w-full min-h-screen">
       <div className="max-w-3xl mx-auto px-6 py-12 w-full">
         <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-8 mb-6 flex flex-col sm:flex-row items-center gap-6">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-4xl font-bold shadow-md shrink-0">
-            {inicial}
-          </div>
+          <button
+            type="button"
+            onClick={() => inputFotoRef.current?.click()}
+            disabled={subiendoFoto}
+            className="relative w-24 h-24 rounded-full shrink-0 group focus:outline-none"
+            title="Cambiar foto de perfil"
+          >
+            {perfilPropio.foto ? (
+              <img
+                src={perfilPropio.foto}
+                alt={perfilPropio.nombre}
+                className="w-24 h-24 rounded-full object-cover shadow-md"
+              />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-4xl font-bold shadow-md">
+                {inicial}
+              </div>
+            )}
+            <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 group-disabled:opacity-100 transition-opacity">
+              <span className="text-white text-xl">{subiendoFoto ? "⏳" : "📷"}</span>
+            </div>
+          </button>
+          <input
+            ref={inputFotoRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={subirFoto}
+          />
           <div className="text-center sm:text-left flex-1">
             <h1 className="text-3xl font-extrabold text-gray-800">
               {perfilPropio.nombre}
