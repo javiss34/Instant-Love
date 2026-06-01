@@ -12,11 +12,19 @@ import DetalleUsuario from "../pages/DetalleUsuario.jsx";
 import RutaPrivada from "./RutaPrivada.jsx";
 import RutaAdmin from "./RutaAdmin.jsx";
 import ProveedorEstadisticas from "../context/ProveedorEstadisticas.jsx";
-import ProveedorAdmin from "../context/ProveedorAdmin.jsx";
+import ProveedorBusqueda from "../context/ProveedorBusqueda.jsx";
+import ProveedorVideollamada from "../context/ProveedorVideollamada.jsx";
 
+/* En vez de envolver en App.jsx las header,rutas y footer con todos los proveedores,
+los envolvemos únicamente en las rutas que necesitan.
+De esta forma evitamos el consumo de memoria y peticiones innecesarias a la API cuando el
+usuario navega por otras secciones */
 const Rutas = () => {
   return (
     <Routes>
+      {/* Hemos usado el componente <Navigate> en vez del hook useNavigate() que era el que usabamos en clase
+      porque para este caso se recomienda usar <Navigate> para fases de renderizado, además, el atributo replace
+      evita que esa redirección se guarde en el historial del navegador, evitando bucles al usar el botón para ir atrás.  */}
       <Route path="/" element={<Navigate to="/inicio" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/registro" element={<Registro />} />
@@ -51,7 +59,9 @@ const Rutas = () => {
         path="/sala-espera"
         element={
           <RutaPrivada>
-            <SalaEspera />
+            <ProveedorBusqueda>
+              <SalaEspera />
+            </ProveedorBusqueda>
           </RutaPrivada>
         }
       />
@@ -59,7 +69,9 @@ const Rutas = () => {
         path="/llamada/:id"
         element={
           <RutaPrivada>
-            <Llamada />
+            <ProveedorVideollamada>
+              <Llamada />
+            </ProveedorVideollamada>
           </RutaPrivada>
         }
       />
@@ -67,7 +79,9 @@ const Rutas = () => {
         path="/votacion/:id"
         element={
           <RutaPrivada>
-            <Votacion />
+            <ProveedorVideollamada>
+              <Votacion />
+            </ProveedorVideollamada>
           </RutaPrivada>
         }
       />
@@ -75,9 +89,7 @@ const Rutas = () => {
         path="/admin"
         element={
           <RutaAdmin>
-            <ProveedorAdmin>
-              <PanelAdmin />
-            </ProveedorAdmin>
+            <PanelAdmin />
           </RutaAdmin>
         }
       />
@@ -85,9 +97,7 @@ const Rutas = () => {
         path="/admin/usuarios/:id"
         element={
           <RutaAdmin>
-            <ProveedorAdmin>
-              <DetalleUsuario />
-            </ProveedorAdmin>
+            <DetalleUsuario />
           </RutaAdmin>
         }
       />

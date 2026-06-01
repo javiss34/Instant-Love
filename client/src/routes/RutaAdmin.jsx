@@ -1,6 +1,8 @@
 import { Navigate } from "react-router-dom";
 import useSesion from "../hooks/useSesion.js";
+import ProveedorAdmin from "../context/ProveedorAdmin.jsx";
 
+/* Componente que portege las vistas de ADMIN */
 const RutaAdmin = ({ children }) => {
   const { sesionIniciada, cargandoSesion, usuario } = useSesion();
 
@@ -12,11 +14,12 @@ const RutaAdmin = ({ children }) => {
     );
   }
 
+  //A parte de comprobar que tiene la sesión iniciada tambien comrpueba que es ADMIN
   if (!sesionIniciada || usuario?.rol !== "ADMIN") {
     return <Navigate to="/inicio" replace />;
   }
 
-  return children;
+  return <ProveedorAdmin>{children}</ProveedorAdmin>;
 };
 
 export default RutaAdmin;

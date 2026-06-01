@@ -1,6 +1,8 @@
 import { Navigate } from "react-router-dom";
 import useSesion from "../hooks/useSesion.js";
 
+//Componente que protege las rutas privadas.
+//Recibe children, que es el componente que el usuario intenta ver
 const RutaPrivada = ({ children }) => {
   const { sesionIniciada, cargandoSesion } = useSesion();
 
@@ -12,10 +14,12 @@ const RutaPrivada = ({ children }) => {
     );
   }
 
+  //Si no tiene la sesión iniciada lo expulsamos al login con Navigate.
   if (!sesionIniciada) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace />;//Usamos replace para no ensuciar el historial del navegador
   }
 
+  //Si tiene sesión devolvemos el contenido.
   return children;
 };
 
