@@ -6,25 +6,21 @@ const ContextoEstadisticas = createContext(null);
 
 const ProveedorEstadisticas = ({ children }) => {
   const [estadisticas, setEstadisticas] = useState(null);
-  const [cargando, setCargando] = useState(true);
-  const { ejecutar } = useApi();
+  const { ejecutar, cargando } = useApi();
+
+  const obtenerEstadisticas = async () => {
+    const datos = await ejecutar(apiClient.get("/estadisticas"));
+    if (datos) setEstadisticas(datos);
+  };
 
   useEffect(() => {
-    const cargar = async () => {
-      try {
-        const datos = await ejecutar(apiClient.get("/estadisticas"));
-        setEstadisticas(datos);
-      } catch {
-        // silencioso
-      } finally {
-        setCargando(false);
-      }
-    };
-    cargar();
+    obtenerEstadisticas();
   }, []);
 
+  const datosAProveer = { estadisticas, cargando, obtenerEstadisticas };
+
   return (
-    <ContextoEstadisticas.Provider value={{ estadisticas, cargando }}>
+    <ContextoEstadisticas.Provider value={datosAProveer}>
       {children}
     </ContextoEstadisticas.Provider>
   );

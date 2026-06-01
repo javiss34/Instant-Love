@@ -6,17 +6,11 @@ const ContextoAdmin = createContext(null);
 
 const ProveedorAdmin = ({ children }) => {
   const [usuarios, setUsuarios] = useState([]);
-  const [cargando, setCargando] = useState(false);
-  const { ejecutar } = useApi();
+  const { ejecutar, cargando } = useApi();
 
   const cargarUsuarios = async () => {
-    setCargando(true);
-    try {
-      const datos = await ejecutar(apiClient.get("/admin/usuarios"));
-      setUsuarios(datos);
-    } finally {
-      setCargando(false);
-    }
+    const datos = await ejecutar(apiClient.get("/admin/usuarios"));
+    if (datos) setUsuarios(datos);
   };
 
   const cambiarRol = async (userId, rol) => {
@@ -27,8 +21,10 @@ const ProveedorAdmin = ({ children }) => {
   const obtenerDetalle = (userId) =>
     ejecutar(apiClient.get(`/admin/usuarios/${userId}`));
 
+  const datosAProveer = { usuarios, cargando, cargarUsuarios, cambiarRol, obtenerDetalle };
+
   return (
-    <ContextoAdmin.Provider value={{ usuarios, cargando, cargarUsuarios, cambiarRol, obtenerDetalle }}>
+    <ContextoAdmin.Provider value={datosAProveer}>
       {children}
     </ContextoAdmin.Provider>
   );

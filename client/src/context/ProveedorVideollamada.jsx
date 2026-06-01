@@ -4,17 +4,19 @@ import DailyIframe from "@daily-co/daily-js";
 import { apiClient } from "../api/apiClient.js";
 import useApi from "../hooks/useApi.js";
 
-const URL_SALA_DAILY = import.meta.env.VITE_DAILY_ROOM_URL;
-const DURACION_LLAMADA_SEGUNDOS = 120;
-const modalInicial = { visible: false, idLlamada: null, accion: null };
-
 const ContextoVideollamada = createContext(null);
 
 const ProveedorVideollamada = ({ children }) => {
+  const URL_SALA_DAILY = import.meta.env.VITE_DAILY_ROOM_URL;
+  const DURACION_LLAMADA_SEGUNDOS = 120;
+  const modalInicial = { visible: false, idLlamada: null, accion: null };
+
   const [avisoCamara, setAvisoCamara] = useState(false);
   const [colgando, setColgando] = useState(false);
   const [modal, setModal] = useState(modalInicial);
-  const [tiempoRestante, setTiempoRestante] = useState(DURACION_LLAMADA_SEGUNDOS);
+  const [tiempoRestante, setTiempoRestante] = useState(
+    DURACION_LLAMADA_SEGUNDOS,
+  );
   const [temporizadorActivo, setTemporizadorActivo] = useState(false);
   const [otroUsuario, setOtroUsuario] = useState(null);
 
@@ -162,9 +164,7 @@ const ProveedorVideollamada = ({ children }) => {
   };
 
   const enviarReporte = async (callId, acusadoId, motivo) => {
-    await ejecutar(
-      apiClient.post("/reportes", { acusadoId, callId, motivo }),
-    );
+    await ejecutar(apiClient.post("/reportes", { acusadoId, callId, motivo }));
   };
 
   const datosAProveer = {

@@ -1,6 +1,11 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiClient, guardarToken, borrarToken, leerToken } from "../api/apiClient.js";
+import {
+  apiClient,
+  guardarToken,
+  borrarToken,
+  leerToken,
+} from "../api/apiClient.js";
 import useApi from "../hooks/useApi.js";
 
 const ContextoSesion = createContext(null);
@@ -14,11 +19,13 @@ const ProveedorSesion = ({ children }) => {
   const navegar = useNavigate();
 
   const verificarSesion = async () => {
+    //Si no hay token en el navegadro, se sale directamente
     if (!leerToken()) {
       setCargandoSesion(false);
       return;
     }
     try {
+      //Si hay token, se piden los datos del peril al backend, para constuir la sesión.
       const respuesta = await apiClient.get("/perfil/");
       const perfil = respuesta.perfil;
       setUsuario({
@@ -28,6 +35,7 @@ const ProveedorSesion = ({ children }) => {
         rol: perfil.User.rol,
       });
     } catch {
+      //Si el servidor da error cerramos la sesión
       borrarToken();
       setUsuario(usuarioInicial);
     } finally {
@@ -35,17 +43,21 @@ const ProveedorSesion = ({ children }) => {
     }
   };
 
+  //Al cargar el navegador por primera vez, se ejecuta el verificarSesion().
   useEffect(() => {
     verificarSesion();
   }, []);
 
+
+  //Aquí tenemos las funciones para inicar sesión, registra, cerrarSesion y eliminarCuenta
   const iniciarSesion = async (datos) => {
     const respuesta = await ejecutar(
       apiClient.post("/auth/iniciar-sesion", datos),
     );
+    //Se guarda el token en el navegador y los datos en la memoria.
     guardarToken(respuesta.token);
     setUsuario(respuesta.usuario);
-    navegar("/inicio");
+    navegar("/inicio"); //Redirigimos al usuario a Inicio
   };
 
   const registrar = async (datos) => {
@@ -68,7 +80,7 @@ const ProveedorSesion = ({ children }) => {
 
   const datosAProveer = {
     usuario,
-    sesionIniciada: usuario !== null,
+    sesionIniciada: usuario !== null,//De esta forma comprobamos rápidamente si está la sesión iniciada o no, sin necesidad de crear otro estado
     cargandoSesion,
     cargando,
     error,

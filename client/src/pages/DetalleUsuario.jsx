@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import useAdmin from "../hooks/useAdmin.js";
-
-const coloresEstado = {
-  PENDIENTE: "bg-yellow-100 text-yellow-700",
-  REVISADO: "bg-blue-100 text-blue-700",
-  SANCIONADO: "bg-red-100 text-red-600",
-};
+import Reporte from "../components/Reporte.jsx";
+import EtiquetaRol from "../components/EtiquetaRol.jsx";
 
 const DetalleUsuario = () => {
   const { id } = useParams();
@@ -66,11 +62,7 @@ const DetalleUsuario = () => {
             <h1 className="text-2xl font-extrabold text-gray-800">@{detalle.username}</h1>
             <p className="text-gray-400 mt-1">{detalle.email}</p>
             <div className="flex items-center gap-2 mt-2">
-              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                detalle.rol === "ADMIN" ? "bg-rose-100 text-rose-600" : "bg-gray-100 text-gray-500"
-              }`}>
-                {detalle.rol === "ADMIN" ? "Administrador" : "Usuario"}
-              </span>
+              <EtiquetaRol rol={detalle.rol} />
               <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                 detalle.activo ? "bg-green-100 text-green-600" : "bg-red-100 text-red-500"
               }`}>
@@ -90,23 +82,12 @@ const DetalleUsuario = () => {
           ) : (
             <div className="flex flex-col gap-3">
               {detalle.reportes.map((r) => (
-                <div key={r.id} className="bg-rose-50 rounded-2xl p-4 flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <p className="text-gray-800 font-medium text-sm">{r.motivo}</p>
-                    <p className="text-gray-400 text-xs mt-1">
-                      Reportado por <span className="font-semibold">@{r.Autor?.username ?? "usuario eliminado"}</span>
-                      {" · "}
-                      {new Date(r.createdAt).toLocaleDateString("es-ES")}
-                    </p>
-                  </div>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${coloresEstado[r.estado]}`}>
-                    {r.estado}
-                  </span>
-                </div>
+                <Reporte key={r.id} reporte={r} />
               ))}
             </div>
           )}
         </div>
+
       </section>
     </div>
   );

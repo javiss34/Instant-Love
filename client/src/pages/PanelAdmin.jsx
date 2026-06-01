@@ -1,19 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import useAdmin from "../hooks/useAdmin.js";
 import useSesion from "../hooks/useSesion.js";
-
-const etiquetaRol = { USER: "Usuario", ADMIN: "Admin" };
-
-const BadgeRol = ({ rol }) => (
-  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-    rol === "ADMIN"
-      ? "bg-rose-100 text-rose-600"
-      : "bg-gray-100 text-gray-500"
-  }`}>
-    {etiquetaRol[rol]}
-  </span>
-);
+import FilaUsuario from "../components/FilaUsuario.jsx";
 
 const PanelAdmin = () => {
   const { usuarios, cargando, cargarUsuarios, cambiarRol } = useAdmin();
@@ -67,64 +55,20 @@ const PanelAdmin = () => {
                 </tr>
               </thead>
               <tbody>
-                {usuarios.map((u) => {
-                  const inicial = (u.Profile?.nombre ?? u.username)?.[0]?.toUpperCase();
-                  const esSelf = u.id === sesion?.id;
-                  return (
-                    <tr key={u.id} className="border-b border-rose-50 last:border-0 hover:bg-rose-50/30 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          {u.Profile?.foto ? (
-                            <img
-                              src={u.Profile.foto}
-                              alt={inicial}
-                              className="w-9 h-9 rounded-full object-cover shrink-0"
-                            />
-                          ) : (
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-sm font-bold shrink-0">
-                              {inicial}
-                            </div>
-                          )}
-                          <div>
-                            <p className="font-semibold text-gray-800">{u.Profile?.nombre ?? "—"}</p>
-                            <p className="text-gray-400 text-xs">@{u.username}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-gray-600">{u.email}</td>
-                      <td className="px-6 py-4">
-                        {esSelf ? (
-                          <BadgeRol rol={u.rol} />
-                        ) : (
-                          <select
-                            value={u.rol}
-                            disabled={cambiando === u.id}
-                            onChange={(e) => handleRol(u.id, e.target.value)}
-                            className="text-xs font-semibold px-2.5 py-1 rounded-full border border-rose-100 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-rose-300 disabled:opacity-50"
-                          >
-                            <option value="USER">Usuario</option>
-                            <option value="ADMIN">Admin</option>
-                          </select>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-gray-400 text-xs">
-                        {new Date(u.createdAt).toLocaleDateString("es-ES")}
-                      </td>
-                      <td className="px-6 py-4">
-                        <Link
-                          to={`/admin/usuarios/${u.id}`}
-                          className="text-xs font-semibold text-rose-500 hover:text-rose-700 transition-colors"
-                        >
-                          Ver detalle →
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {usuarios.map((u) => (
+                  <FilaUsuario
+                    key={u.id}
+                    usuario={u}
+                    esSelf={u.id === sesion?.id}
+                    cambiando={cambiando === u.id}
+                    onCambiarRol={(nuevoRol) => handleRol(u.id, nuevoRol)}
+                  />
+                ))}
               </tbody>
             </table>
           </div>
         )}
+
       </section>
     </div>
   );
