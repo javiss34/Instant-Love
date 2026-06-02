@@ -90,8 +90,9 @@ const MiPerfil = () => {
 
   return (
     <div className="flex-1 bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50 w-full min-h-screen">
-      <div className="max-w-3xl mx-auto px-6 py-12 w-full">
-        <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-8 mb-6 flex flex-col sm:flex-row items-center gap-6">
+      <div className="max-w-3xl mx-auto px-4 py-8 sm:px-6 sm:py-12 w-full">
+        
+        <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-6 sm:p-8 mb-6 flex flex-col sm:flex-row items-center gap-6">
           <button
             type="button"
             onClick={() => inputFotoRef.current?.click()}
@@ -122,7 +123,7 @@ const MiPerfil = () => {
             onChange={subirFoto}
           />
           <div className="text-center sm:text-left flex-1">
-            <h1 className="text-3xl font-extrabold text-gray-800">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">
               {perfilPropio.nombre}
             </h1>
             <p className="text-gray-400 mt-1">{perfilPropio.User?.email}</p>
@@ -138,8 +139,8 @@ const MiPerfil = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-5">
+        <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-6 sm:p-8">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-5 text-center sm:text-left">
             {modoEdicion
               ? "Editando tus datos públicos"
               : "Preferencias y contacto"}
@@ -162,7 +163,7 @@ const MiPerfil = () => {
             />
           ) : (
             <div className="flex flex-col gap-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center sm:text-left">
                 <div className="bg-rose-50 rounded-2xl p-4">
                   <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
                     Género
@@ -212,7 +213,6 @@ const MiPerfil = () => {
                 </div>
               </div>
 
-              {/* Botones de acción de la vista de lectura */}
               <div className="pt-6 mt-2 border-t border-gray-100">
                 {!confirmandoEliminar ? (
                   <div className="flex flex-wrap gap-3 items-center">
