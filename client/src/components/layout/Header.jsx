@@ -81,8 +81,10 @@ const Header = () => {
               <>
                 <button
                   onClick={() => setConfirmandoSalir(true)}
-                  className={`text-sm font-medium transition-colors ${
-                    esInicio ? "text-white/90 hover:text-white" : "text-gray-500 hover:text-rose-500"
+                  className={`text-sm font-semibold px-4 py-1.5 rounded-full transition-colors shadow-sm ${
+                    esInicio
+                      ? "bg-white/20 text-white hover:bg-white/30"
+                      : "bg-red-500 text-white hover:bg-red-600"
                   }`}
                 >
                   Salir

@@ -75,7 +75,7 @@ const MenuMovil = ({
               cerrarMenu();
               setConfirmandoSalir(true);
             }}
-            className="mt-2 text-left text-gray-500 font-medium hover:text-red-500"
+            className="mt-2 text-center text-sm font-bold text-white bg-red-500 hover:bg-red-600 py-3 rounded-xl shadow-sm transition-colors"
           >
             Salir
           </button>
