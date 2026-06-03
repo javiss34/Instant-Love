@@ -14,7 +14,7 @@ const cambiarRol = async (adminId, userId, nuevoRol) => {
 };
 
 const obtenerDetalle = async (userId) => {
-  const usuario = await userRepository.buscarPorId(userId);
+  const usuario = await userRepository.buscarPorIdConPerfil(userId);
   if (!usuario) throw new ApiError(404, "Usuario no encontrado");
   const reportes = await reportRepository.listarPorAcusado(userId);
   return {
@@ -24,6 +24,7 @@ const obtenerDetalle = async (userId) => {
     rol: usuario.rol,
     activo: usuario.activo,
     createdAt: usuario.createdAt,
+    foto: usuario.Profile?.foto ?? null,
     reportes,
   };
 };

@@ -12,6 +12,12 @@ const buscarPorId = (id) => {
   return User.findByPk(id);
 };
 
+const buscarPorIdConPerfil = (id) => {
+  return User.findByPk(id, {
+    include: [{ model: Profile, attributes: ["foto"] }],
+  });
+};
+
 const crear = (datos, transaccion) => {
   return User.create(datos, { transaction: transaccion });
 };
@@ -32,6 +38,7 @@ export default {
   buscarPorEmail,
   buscarPorUsername,
   buscarPorId,
+  buscarPorIdConPerfil,
   crear,
   eliminarPorId,
   listarTodos,

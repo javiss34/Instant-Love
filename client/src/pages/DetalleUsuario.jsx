@@ -55,8 +55,18 @@ const DetalleUsuario = () => {
         </Link>
 
         <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-8 mb-6 flex items-center gap-6">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-3xl font-bold shrink-0">
-            {inicial}
+          <div className="shrink-0">
+            {detalle.foto ? (
+              <img
+                src={detalle.foto}
+                alt={detalle.username}
+                className="w-20 h-20 rounded-full object-cover shadow-md"
+              />
+            ) : (
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-3xl font-bold">
+                {inicial}
+              </div>
+            )}
           </div>
           <div>
             <h1 className="text-2xl font-extrabold text-gray-800">@{detalle.username}</h1>
