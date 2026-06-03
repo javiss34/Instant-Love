@@ -13,7 +13,9 @@ const Reporte = ({ reporte, mostrarDestino = false }) => (
       <p className="text-gray-400 text-xs mt-1">
         {mostrarDestino ? (
           <>
-            <span className="font-semibold">@{reporte.Autor?.username ?? "—"}</span>
+            <span className="font-semibold">
+              @{reporte.Autor?.username ?? "—"}
+            </span>
             {" → "}
             <Link
               to={`/admin/usuarios/${reporte.acusadoId}`}
@@ -34,7 +36,9 @@ const Reporte = ({ reporte, mostrarDestino = false }) => (
         {new Date(reporte.createdAt).toLocaleDateString("es-ES")}
       </p>
     </div>
-    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${coloresEstado[reporte.estado]}`}>
+    <span
+      className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${coloresEstado[reporte.estado]}`}
+    >
       {reporte.estado}
     </span>
   </div>

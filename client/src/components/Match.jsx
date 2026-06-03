@@ -1,3 +1,4 @@
+//Componente que muestra la información de un usuario con el que se ha hecho match
 const Match = ({ match }) => (
   <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-5 flex items-center gap-5 shadow-sm border border-rose-100">
     <img

@@ -28,7 +28,7 @@ const FormularioPerfil = ({
   const manejarEnvio = async (e) => {
     e.preventDefault();
     setErrores({});
-
+    //Preparamos los datos, tenieno en cuenta que si elige Otro (lo explico en FormularioRegistro)
     const datosAEnviar = { ...datos };
     if (datos.red_social_tipo === "OTRO") {
       datosAEnviar.red_social_usuario = `${datos.red_social_nombre}: ${datos.red_social_usuario}`;

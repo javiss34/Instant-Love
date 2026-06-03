@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
 import EtiquetaRol from "./EtiquetaRol.jsx";
-
+/* Este componente es para cada fila de cada usuario que podrá ver el admin en su sección */
 const FilaUsuario = ({ usuario, esSelf, cambiando, onCambiarRol }) => {
+  //Para obtener la inicial hacemos exactamente igual que en Header
   const inicial = (usuario.Profile?.nombre ?? usuario.username)?.[0]?.toUpperCase();
 
   return (
+
     <tr className="border-b border-rose-50 last:border-0 hover:bg-rose-50/30 transition-colors">
+      {/* Columna 1: Avatar y nombre */}
       <td className="px-6 py-4">
         <div className="flex items-center gap-3">
           {usuario.Profile?.foto ? (
@@ -25,9 +28,12 @@ const FilaUsuario = ({ usuario, esSelf, cambiando, onCambiarRol }) => {
           </div>
         </div>
       </td>
+      {/* Columna 2: Email */}
       <td className="px-6 py-4 text-gray-600">{usuario.email}</td>
+      {/* Columna 3: Roles */}
       <td className="px-6 py-4">
         {esSelf ? (
+          /* Si el administrador ve su propia fila no le dejamos cambiar su rol */
           <EtiquetaRol rol={usuario.rol} />
         ) : (
           <select
@@ -41,9 +47,11 @@ const FilaUsuario = ({ usuario, esSelf, cambiando, onCambiarRol }) => {
           </select>
         )}
       </td>
+      {/* Columna4: Fecha de registro formateada */}
       <td className="px-6 py-4 text-gray-400 text-xs">
         {new Date(usuario.createdAt).toLocaleDateString("es-ES")}
       </td>
+      {/* Columna 5: Link para ver más detalles */}
       <td className="px-6 py-4">
         <Link
           to={`/admin/usuarios/${usuario.id}`}

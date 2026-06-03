@@ -4,7 +4,10 @@ const MostrarError = ({ objetoErrores }) => {
   return (
     <div className="flex flex-col gap-1">
       {erroresReales.map((e, i) => (
-        <p key={i} className="text-sm text-center text-red-600 bg-red-50 rounded-lg py-2 px-3">
+        <p
+          key={i}
+          className="text-sm text-center text-red-600 bg-red-50 rounded-lg py-2 px-3"
+        >
           {e}
         </p>
       ))}

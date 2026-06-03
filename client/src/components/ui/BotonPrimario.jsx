@@ -1,14 +1,17 @@
+//Botón reutilizable para no tener que estar escribiendo siempre lo mismo
 const BotonPrimario = ({
   children,
   onClick,
   disabled = false,
   type = "button",
-  variante = "primario",
-  className = "",
+  variante = "primario", //'primario', 'secundario' o 'peligro'
+  className = "", //Permite inyectar clases extra como márgenes desde el padre
 }) => {
+  //Clases que tendrán todos los botones
   const estilosBase =
     "w-full py-3 px-6 font-semibold rounded-xl transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
 
+  //Dependiendo de la variante que se elija que por defecto es primario se le establece un estilo
   const estilosPorVariante = {
     primario:
       "bg-gradient-to-r from-rose-500 to-orange-400 hover:from-rose-600 hover:to-orange-500 text-white shadow-md",
@@ -17,8 +20,8 @@ const BotonPrimario = ({
     peligro:
       "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white shadow-md",
   };
-//Hemos decidido usar button en vez de input, aunque para los formularios en clase hemos estado usando input y onclick para enviar el formulario.
-//La razón principal es por la experiencia del usuario. Ya que al pulsar enter con onclick no hace nada, mientras que con el submit en el form si.
+  //Hemos decidido usar button en vez de input, aunque para los formularios en clase hemos estado usando input y onclick para enviar el formulario.
+  //La razón principal es por la experiencia del usuario. Ya que al pulsar enter con onclick no hace nada, mientras que con el submit en el form si.
   return (
     <button
       type={type}
