@@ -27,4 +27,25 @@ const listarPorAcusado = (acusadoId) => {
   });
 };
 
-export default { crear, listar, listarRecientes, listarPorAcusado };
+const listarTodos = () => {
+  return Report.findAll({
+    order: [["createdAt", "DESC"]],
+    include: [
+      { model: User, as: "Autor", attributes: ["username"] },
+      { model: User, as: "Destino", attributes: ["username"] },
+    ],
+  });
+};
+
+const actualizarEstado = async (id, estado) => {
+  const [filas] = await Report.update({ estado }, { where: { id } });
+  if (filas === 0) return null;
+  return Report.findByPk(id, {
+    include: [
+      { model: User, as: "Autor", attributes: ["username"] },
+      { model: User, as: "Destino", attributes: ["username"] },
+    ],
+  });
+};
+
+export default { crear, listar, listarRecientes, listarPorAcusado, listarTodos, actualizarEstado };

@@ -33,4 +33,16 @@ const crear = async (reporteroId, datos) => {
 
 const listar = () => reportRepository.listar();
 
-export default { crear, listar };
+const listarTodos = () => reportRepository.listarTodos();
+
+const actualizarEstado = async (id, estado) => {
+  const ESTADOS = ["PENDIENTE", "REVISADO", "SANCIONADO"];
+  if (!ESTADOS.includes(estado)) {
+    throw new ApiError(400, "Estado no válido.");
+  }
+  const reporte = await reportRepository.actualizarEstado(id, estado);
+  if (!reporte) throw new ApiError(404, "Reporte no encontrado.");
+  return reporte;
+};
+
+export default { crear, listar, listarTodos, actualizarEstado };

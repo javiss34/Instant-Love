@@ -4,7 +4,7 @@ import profileRepository from "../repositories/profileRepository.js";
 import reportRepository from "../repositories/reportRepository.js";
 
 const obtenerEstadisticas = async (userId, rol) => {
-  const [{ citas, minutos, conexiones }, otrosIds] = await Promise.all([
+  const [{ citas, minutos }, otrosIds] = await Promise.all([
     callHistoryRepository.estadisticasPorUsuario(userId),
     outcomeRepository.listarMatchesPorUsuario(userId),
   ]);
@@ -19,6 +19,9 @@ const obtenerEstadisticas = async (userId, rol) => {
     red_social_tipo: p?.red_social_tipo ?? null,
     red_social_usuario: p?.red_social_usuario ?? null,
   }));
+
+  // conexiones = solo los matches con perfil visible (misma lógica que el filtro del frontend)
+  const conexiones = matches.filter((m) => m.nombre && m.foto).length;
 
   const resultado = { citas, minutos, conexiones, matches };
 

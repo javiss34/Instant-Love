@@ -10,8 +10,13 @@ const crearReporte = async (req, res) => {
 };
 
 const obtenerReportes = async (req, res) => {
-  const reportes = await reportService.listar();
+  const reportes = await reportService.listarTodos();
   res.status(200).json(reportes);
 };
 
-export { crearReporte, obtenerReportes };
+const actualizarEstadoReporte = async (req, res) => {
+  const reporte = await reportService.actualizarEstado(req.params.id, req.body.estado);
+  res.status(200).json(reporte);
+};
+
+export { crearReporte, obtenerReportes, actualizarEstadoReporte };

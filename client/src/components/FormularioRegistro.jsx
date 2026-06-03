@@ -11,7 +11,6 @@ import {
 } from "../biblioteca/validaciones/sesionEsquemas.js";
 import MostrarError from "./MostrarError.jsx";
 
-
 const FormularioRegistro = () => {
   const datosRegistroInicial = {
     username: "",
@@ -85,12 +84,12 @@ const FormularioRegistro = () => {
       if (mensaje.toLowerCase().includes("email")) {
         setPaso(1);
         setErrores({ email: mensaje });
-      //Si llega un error del backend por el nombre de usuario, por ejemplo porque ya esta en uso, le llevamos de vuelta al paso1
-      // y establecemos el error a usuario, para que se muestre rojo el input.
+        //Si llega un error del backend por el nombre de usuario, por ejemplo porque ya esta en uso, le llevamos de vuelta al paso1
+        // y establecemos el error a usuario, para que se muestre rojo el input.
       } else if (mensaje.toLowerCase().includes("usuario")) {
         setPaso(1);
         setErrores({ username: mensaje });
-      //Si es otro error se muestra en general, al final del formulario
+        //Si es otro error se muestra en general, al final del formulario
       } else {
         setErrores({ general: mensaje });
       }
@@ -98,14 +97,16 @@ const FormularioRegistro = () => {
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-      <div className="text-center mb-8">
+    <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+      <div className="text-center mb-6 sm:mb-8">
         <img
           src={logo}
           alt="InstantLove"
-          className="h-16 w-16 rounded-2xl shadow-md mx-auto mb-4"
+          className="h-14 w-14 sm:h-16 sm:w-14 rounded-2xl shadow-md mx-auto mb-4"
         />
-        <h1 className="text-3xl font-bold text-rose-500">InstantLove</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-rose-500">
+          InstantLove
+        </h1>
         <p className="text-gray-500 mt-2 text-sm">
           {paso === 1
             ? "Crea tu cuenta y empieza a conocer gente"
@@ -122,7 +123,7 @@ const FormularioRegistro = () => {
       </div>
 
       {paso === 1 ? (
-        <form onSubmit={avanzar} className="flex flex-col gap-5">
+        <form onSubmit={avanzar} className="flex flex-col gap-4 sm:gap-5">
           <InputFormulario
             id="username"
             name="username"
@@ -182,7 +183,7 @@ const FormularioRegistro = () => {
           <BotonPrimario type="submit">Siguiente →</BotonPrimario>
         </form>
       ) : (
-        <form onSubmit={enviar} className="flex flex-col gap-5">
+        <form onSubmit={enviar} className="flex flex-col gap-4 sm:gap-5">
           <SelectFormulario
             id="genero"
             name="genero"

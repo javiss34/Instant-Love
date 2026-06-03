@@ -50,20 +50,22 @@ const FormularioLogin = () => {
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
-      <div className="text-center mb-8">
+    <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+      <div className="text-center mb-6 sm:mb-8">
         <img
           src={logo}
           alt="InstantLove"
-          className="h-16 w-16 rounded-2xl shadow-md mx-auto mb-4"
+          className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl shadow-md mx-auto mb-4"
         />
-        <h1 className="text-3xl font-bold text-rose-500">InstantLove</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-rose-500">
+          InstantLove
+        </h1>
         <p className="text-gray-500 mt-2 text-sm">
           Inicia sesión para continuar
         </p>
       </div>
 
-      <form onSubmit={enviar} className="flex flex-col gap-5">
+      <form onSubmit={enviar} className="flex flex-col gap-4 sm:gap-5">
         <InputFormulario
           id="email"
           name="email"

@@ -37,10 +37,7 @@ const estadisticasPorUsuario = async (userId) => {
   const minutos = Math.floor(
     llamadas.reduce((suma, l) => suma + (l.duracion || 0), 0) / 60,
   );
-  const conexiones = new Set(
-    llamadas.map((l) => (l.user1Id === userId ? l.user2Id : l.user1Id)),
-  ).size;
-  return { citas, minutos, conexiones };
+  return { citas, minutos };
 };
 const crear = (datos) => {
   return CallHistory.create(datos);

@@ -60,7 +60,7 @@ const FormularioPerfil = ({
   };
 
   return (
-    <form onSubmit={manejarEnvio} className="flex flex-col gap-5">
+    <form onSubmit={manejarEnvio} className="flex flex-col gap-4 sm:gap-5">
       <InputFormulario
         id="nombre"
         name="nombre"
@@ -154,7 +154,7 @@ const FormularioPerfil = ({
             </BotonPrimario>
           </div>
         ) : (
-          <div className="bg-red-50 rounded-2xl p-6 border border-red-200 mt-2">
+          <div className="bg-red-50 rounded-2xl p-5 sm:p-6 border border-red-200 mt-2">
             <p className="text-gray-800 font-bold mb-1">
               ¿Seguro que quieres eliminar tu cuenta?
             </p>
