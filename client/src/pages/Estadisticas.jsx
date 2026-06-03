@@ -44,7 +44,7 @@ const Estadisticas = () => {
                 <p className="text-gray-400 text-center py-8">Aún no tienes ningún match. ¡Sigue intentándolo!</p>
               ) : (
                 <div className="flex flex-col gap-4">
-                  {matches.map((match, i) => (
+                  {matches.filter((match) => match?.nombre && match?.foto).map((match, i) => (
                     <Match key={i} match={match} />
                   ))}
                 </div>

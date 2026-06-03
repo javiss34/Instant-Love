@@ -16,6 +16,7 @@ const Header = () => {
   const foto = perfilPropio?.foto ?? null;
 
   return (
+    <>
     <header className={`sticky top-0 z-50 transition-colors duration-300 ${
       esInicio
         ? "bg-transparent border-transparent shadow-none"
@@ -124,29 +125,31 @@ const Header = () => {
         </div>
 
       </div>
-      {confirmandoSalir && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
-            <p className="text-gray-800 font-bold text-lg mb-2">¿Seguro que quieres salir?</p>
-            <p className="text-gray-400 text-sm mb-6">Se cerrará tu sesión.</p>
-            <div className="flex gap-3">
-              <button
-                onClick={cerrarSesion}
-                className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 rounded-xl transition-colors"
-              >
-                Sí, salir
-              </button>
-              <button
-                onClick={() => setConfirmandoSalir(false)}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors"
-              >
-                Cancelar
-              </button>
-            </div>
+    </header>
+
+    {confirmandoSalir && (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
+          <p className="text-gray-800 font-bold text-lg mb-2">¿Seguro que quieres salir?</p>
+          <p className="text-gray-400 text-sm mb-6">Se cerrará tu sesión.</p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => { setConfirmandoSalir(false); cerrarSesion(); }}
+              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 rounded-xl transition-colors"
+            >
+              Sí, salir
+            </button>
+            <button
+              onClick={() => setConfirmandoSalir(false)}
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors"
+            >
+              Cancelar
+            </button>
           </div>
         </div>
-      )}
-    </header>
+      </div>
+    )}
+    </>
   );
 };
 
