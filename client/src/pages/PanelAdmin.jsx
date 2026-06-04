@@ -12,9 +12,10 @@ const coloresEstado = {
 };
 
 const PanelAdmin = () => {
-  const { usuarios, reportes, cargando, cargarUsuarios, cambiarRol, cargarReportes, cambiarEstadoReporte } = useAdmin();
+  const { usuarios, reportes, cargando, cargarUsuarios, cambiarRol, cambiarActivo, cargarReportes, cambiarEstadoReporte } = useAdmin();
   const { usuario: sesion } = useSesion();
   const [cambiando, setCambiando] = useState(null);
+  const [cambiandoActivo, setCambiandoActivo] = useState(null);
   const [cambiandoReporte, setCambiandoReporte] = useState(null);
   const [error, setError] = useState(null);
 
@@ -22,6 +23,18 @@ const PanelAdmin = () => {
     cargarUsuarios();
     cargarReportes();
   }, []);
+
+  const handleActivo = async (userId) => {
+    setCambiandoActivo(userId);
+    setError(null);
+    try {
+      await cambiarActivo(userId);
+    } catch (err) {
+      setError(err.response?.data?.mensaje ?? "Error al cambiar el estado de la cuenta");
+    } finally {
+      setCambiandoActivo(null);
+    }
+  };
 
   const handleRol = async (userId, nuevoRol) => {
     setCambiando(userId);
@@ -62,7 +75,7 @@ const PanelAdmin = () => {
         )}
 
         {/* Tabla de usuarios */}
-        {cargando ? (
+        {cargando && usuarios.length === 0 ? (
           <p className="text-center text-gray-400 text-lg animate-pulse">Cargando...</p>
         ) : (
           <>
@@ -84,7 +97,9 @@ const PanelAdmin = () => {
                       usuario={u}
                       esSelf={u.id === sesion?.id}
                       cambiando={cambiando === u.id}
+                      cambiandoActivo={cambiandoActivo === u.id}
                       onCambiarRol={(nuevoRol) => handleRol(u.id, nuevoRol)}
+                      onCambiarActivo={() => handleActivo(u.id)}
                     />
                   ))}
                 </tbody>

@@ -112,14 +112,11 @@ const FormularioRegistro = () => {
             ? "Crea tu cuenta y empieza a conocer gente"
             : "Cuéntanos un poco más sobre ti"}
         </p>
-        <div className="flex justify-center gap-2 mt-4">
-          <div
-            className={`h-1.5 w-8 rounded-full ${paso === 1 ? "bg-rose-500" : "bg-rose-200"}`}
-          />
-          <div
-            className={`h-1.5 w-8 rounded-full ${paso === 2 ? "bg-rose-500" : "bg-rose-200"}`}
-          />
+        <div className="flex justify-center gap-2 mt-4" aria-label={`Paso ${paso} de 2`}>
+          <div className={`h-1.5 w-8 rounded-full ${paso === 1 ? "bg-rose-500" : "bg-rose-200"}`} />
+          <div className={`h-1.5 w-8 rounded-full ${paso === 2 ? "bg-rose-500" : "bg-rose-200"}`} />
         </div>
+        <p className="sr-only">Paso {paso} de 2</p>
       </div>
 
       {paso === 1 ? (
@@ -164,7 +161,7 @@ const FormularioRegistro = () => {
             type="password"
             value={datos.password}
             onChange={actualizarDato}
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Mín. 8 caracteres, mayúscula y símbolo"
             error={errores.password}
           />
 

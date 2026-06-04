@@ -19,6 +19,15 @@ const ProveedorAdmin = ({ children }) => {
     setUsuarios((prev) => prev.map((u) => (u.id === userId ? { ...u, rol } : u)));
   };
 
+  const cambiarActivo = async (userId) => {
+    const datos = await ejecutar(apiClient.patch(`/admin/usuarios/${userId}/activo`));
+    if (datos) {
+      setUsuarios((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, activo: datos.activo } : u)),
+      );
+    }
+  };
+
   const obtenerDetalle = (userId) =>
     ejecutar(apiClient.get(`/admin/usuarios/${userId}`));
 
@@ -44,6 +53,7 @@ const ProveedorAdmin = ({ children }) => {
     cargando,
     cargarUsuarios,
     cambiarRol,
+    cambiarActivo,
     obtenerDetalle,
     cargarReportes,
     cambiarEstadoReporte,

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 const MenuMovil = ({
   usuario,
   foto,
-  inicial,
   cerrarMenu,
   setConfirmandoSalir,
 }) => {
@@ -13,17 +12,11 @@ const MenuMovil = ({
         <>
           {/* Cabecera con avatar y email */}
           <div className="flex items-center gap-3 mb-2 pb-4 border-b border-gray-100">
-            {foto ? (
-              <img
-                src={foto}
-                alt={inicial}
-                className="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-rose-100"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm ring-2 bg-gradient-to-br from-rose-400 to-orange-400 text-white ring-rose-100">
-                {inicial}
-              </div>
-            )}
+            <img
+              src={foto}
+              alt="Foto de perfil"
+              className="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-rose-100"
+            />
             <div>
               <p className="text-sm font-bold text-gray-800">{usuario.email}</p>
               <p className="text-xs text-rose-500 font-medium">Mi Cuenta</p>

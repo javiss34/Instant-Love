@@ -13,6 +13,14 @@ const cambiarRol = async (adminId, userId, nuevoRol) => {
   return { id: usuario.id, username: usuario.username, email: usuario.email, rol: nuevoRol };
 };
 
+const cambiarActivo = async (adminId, userId) => {
+  if (adminId === userId) throw new ApiError(400, "No puedes desactivar tu propia cuenta");
+  const usuario = await userRepository.buscarPorId(userId);
+  if (!usuario) throw new ApiError(404, "Usuario no encontrado");
+  await usuario.update({ activo: !usuario.activo });
+  return { id: usuario.id, activo: usuario.activo };
+};
+
 const obtenerDetalle = async (userId) => {
   const usuario = await userRepository.buscarPorIdConPerfil(userId);
   if (!usuario) throw new ApiError(404, "Usuario no encontrado");
@@ -29,4 +37,4 @@ const obtenerDetalle = async (userId) => {
   };
 };
 
-export default { listarUsuarios, cambiarRol, obtenerDetalle };
+export default { listarUsuarios, cambiarRol, cambiarActivo, obtenerDetalle };

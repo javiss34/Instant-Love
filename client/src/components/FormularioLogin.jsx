@@ -84,7 +84,7 @@ const FormularioLogin = () => {
           type="password"
           value={datos.password}
           onChange={actualizarDato}
-          placeholder="••••••••"
+          placeholder="Tu contraseña"
           error={errores.password}
         />
 

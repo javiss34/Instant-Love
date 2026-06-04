@@ -103,10 +103,10 @@ const Llamada = () => {
       </div>
 
       {modal.visible && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="modal-match-titulo">
           <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
             <div className="text-4xl mb-4">💕</div>
-            <h2 className="text-xl font-bold text-gray-800 mb-2">
+            <h2 id="modal-match-titulo" className="text-xl font-bold text-gray-800 mb-2">
               ¿Te ha gustado esta persona?
             </h2>
             <p className="text-gray-500 text-sm mb-6">
@@ -130,7 +130,7 @@ const Llamada = () => {
         </div>
       )}
       {modalReporte.visible && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="modal-reporte-titulo">
           <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl">
             {modalReporte.enviado ? (
               <div className="text-center">
@@ -147,7 +147,7 @@ const Llamada = () => {
             ) : (
               <>
                 <div className="text-3xl mb-3">🚩</div>
-                <h2 className="text-lg font-bold text-gray-800 mb-1">
+                <h2 id="modal-reporte-titulo" className="text-lg font-bold text-gray-800 mb-1">
                   ¿Seguro que quieres reportar a {otroUsuario?.nombre ?? otroUsuario?.username}?
                 </h2>
                 <p className="text-gray-500 text-sm mb-5">

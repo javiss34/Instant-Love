@@ -17,9 +17,6 @@ const Header = () => {
   //Vemos si la ubicación es inicio para aplicar un estilo diferente
   const esInicio = ubicacion.pathname === "/inicio";
 
-  //Obtenemos la inicial del nombre o del nombre de usuario y la hace mayúscula para introducirla en la foto de perfil
-  //Usamos ?? porque es más estricto que ||, por ejemplo con || si el valor es 0 significa vacio y se lo salta con ?? se respetan estos datos reales
-  const inicial = (perfilPropio?.nombre ?? usuario?.username ?? usuario?.email)?.[0]?.toUpperCase();
   const foto = perfilPropio?.foto ?? null;
 
   const cerrarMenu = () => setMenuAbierto(false);
@@ -58,6 +55,8 @@ const Header = () => {
           <button
             className={`md:hidden p-2 rounded-lg ${esInicio ? "text-white" : "text-gray-600"}`}
             onClick={() => setMenuAbierto(!menuAbierto)}
+            aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={menuAbierto}
           >
             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {menuAbierto ? (
@@ -90,23 +89,11 @@ const Header = () => {
                   Salir
                 </button>
                 <Link to="/mi-perfil">
-                  {foto ? (
-                    <img
-                      src={foto}
-                      alt={inicial}
-                      className="w-9 h-9 rounded-full object-cover shadow-md ring-2 ring-white"
-                    />
-                  ) : (
-                    <div
-                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold shadow-md ring-2 ${
-                        esInicio
-                          ? "bg-white text-rose-500 ring-white/30"
-                          : "bg-gradient-to-br from-rose-400 to-orange-400 text-white ring-white"
-                      }`}
-                    >
-                      {inicial}
-                    </div>
-                  )}
+                  <img
+                    src={foto}
+                    alt="Foto de perfil"
+                    className="w-9 h-9 rounded-full object-cover shadow-md ring-2 ring-white"
+                  />
                 </Link>
               </>
             ) : (
@@ -139,7 +126,6 @@ const Header = () => {
           <MenuMovil
             usuario={usuario}
             foto={foto}
-            inicial={inicial}
             cerrarMenu={cerrarMenu}
             setConfirmandoSalir={setConfirmandoSalir}
           />
@@ -149,9 +135,9 @@ const Header = () => {
       {/* Si dejaba el mensaje de confirmación en la cabecera, se quedaba atrapado y no dejaba que tapara toda la pantalla, 
       por eso lo hemo sacado fuera, para que pueda ponerse encima de toda la página sin romperse */}
       {confirmandoSalir && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4" role="dialog" aria-modal="true" aria-labelledby="modal-salir-titulo">
           <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
-            <p className="text-gray-800 font-bold text-lg mb-2">¿Seguro que quieres salir?</p>
+            <p id="modal-salir-titulo" className="text-gray-800 font-bold text-lg mb-2">¿Seguro que quieres salir?</p>
             <p className="text-gray-400 text-sm mb-6">Se cerrará tu sesión.</p>
             <div className="flex gap-3">
               <button

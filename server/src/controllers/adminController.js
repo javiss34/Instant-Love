@@ -10,9 +10,14 @@ const cambiarRol = async (req, res) => {
   res.status(200).json(usuario);
 };
 
+const cambiarActivo = async (req, res) => {
+  const resultado = await adminService.cambiarActivo(req.usuario.id, req.params.id);
+  res.status(200).json(resultado);
+};
+
 const obtenerDetalle = async (req, res) => {
   const detalle = await adminService.obtenerDetalle(req.params.id);
   res.status(200).json(detalle);
 };
 
-export { listarUsuarios, cambiarRol, obtenerDetalle };
+export { listarUsuarios, cambiarRol, cambiarActivo, obtenerDetalle };

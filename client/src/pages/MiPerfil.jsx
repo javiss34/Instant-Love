@@ -100,17 +100,11 @@ const MiPerfil = () => {
             className="relative w-24 h-24 rounded-full shrink-0 group focus:outline-none"
             title="Cambiar foto de perfil"
           >
-            {perfilPropio.foto ? (
-              <img
-                src={perfilPropio.foto}
-                alt={perfilPropio.nombre}
-                className="w-24 h-24 rounded-full object-cover shadow-md"
-              />
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white text-4xl font-bold shadow-md">
-                {inicial}
-              </div>
-            )}
+            <img
+              src={perfilPropio.foto}
+              alt={perfilPropio.nombre}
+              className="w-24 h-24 rounded-full object-cover shadow-md"
+            />
             <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 group-disabled:opacity-100 transition-opacity">
               <span className="text-white text-xl">{subiendoFoto ? "⏳" : "📷"}</span>
             </div>
