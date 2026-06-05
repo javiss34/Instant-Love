@@ -27,7 +27,10 @@ const Estadisticas = () => {
     },
   ];
 
-  const matches = estadisticas?.matches ?? [];
+  // Filtramos aquí para que tanto el check de vacío como el map usen el mismo array
+  const matches = (estadisticas?.matches ?? []).filter(
+    (match) => match?.nombre && match?.foto,
+  );
   const reportes = estadisticas?.reportes ?? null;
 
   return (
@@ -64,11 +67,9 @@ const Estadisticas = () => {
                 </p>
               ) : (
                 <div className="flex flex-col gap-4">
-                  {matches
-                    .filter((match) => match?.nombre && match?.foto)
-                    .map((match, i) => (
-                      <Match key={i} match={match} />
-                    ))}
+                  {matches.map((match, i) => (
+                    <Match key={i} match={match} />
+                  ))}
                 </div>
               )}
             </div>
