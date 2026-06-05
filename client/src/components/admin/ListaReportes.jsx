@@ -1,4 +1,4 @@
-//Se declaran fuera del componente por cuestión de rendimiento
+// Se declaran fuera del componente por cuestión de rendimiento
 const ESTADOS = ["PENDIENTE", "REVISADO", "SANCIONADO"];
 
 const coloresEstado = {
@@ -7,7 +7,7 @@ const coloresEstado = {
   SANCIONADO: "bg-red-100 text-red-600 border-red-200",
 };
 
-//Componente para listar reportes
+// Componente para listar reportes
 const ListaReportes = ({ reportes, cambiandoReporte, abrirCambioEstado }) => {
   return (
     <div className="mt-14">
@@ -22,10 +22,10 @@ const ListaReportes = ({ reportes, cambiandoReporte, abrirCambioEstado }) => {
           {reportes.map((r) => (
             <div
               key={r.id}
-              className="bg-white rounded-2xl px-5 py-4 flex items-center gap-4 shadow-sm border border-rose-100"
+              className="bg-white rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4 shadow-sm border border-rose-100"
             >
               {/* Información del reporte */}
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 w-full">
                 <p className="text-gray-800 font-medium text-sm">{r.motivo}</p>
                 <p className="text-gray-400 text-xs mt-1">
                   <span className="font-semibold">
@@ -46,13 +46,13 @@ const ListaReportes = ({ reportes, cambiandoReporte, abrirCambioEstado }) => {
               </div>
 
               {/* Botones de estado */}
-              <div className="flex gap-2 shrink-0">
+              <div className="flex flex-wrap gap-2 shrink-0 w-full sm:w-auto mt-2 sm:mt-0 pt-3 sm:pt-0 border-t sm:border-0 border-gray-50">
                 {ESTADOS.map((estado) => (
                   <button
                     key={estado}
                     disabled={cambiandoReporte === r.id || r.estado === estado}
                     onClick={() => abrirCambioEstado(r.id, estado)}
-                    className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-opacity ${
+                    className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-opacity flex-1 sm:flex-none text-center ${
                       r.estado === estado
                         ? coloresEstado[estado]
                         : "bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100"
