@@ -7,6 +7,7 @@ const SalaEspera = () => {
   const navegar = useNavigate();
   const { mensajeError, iniciarBusqueda, pararBusqueda } = useBusqueda();
 
+  //Al entrar a la sala de espera arrancamos la búsqueda; al salir la paramos para no dejar polling corriendo
   useEffect(() => {
     iniciarBusqueda();
     return () => {

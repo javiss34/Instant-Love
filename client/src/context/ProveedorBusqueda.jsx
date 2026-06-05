@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { apiClient } from "../api/apiClient.js";
 import useApi from "../hooks/useApi.js";
 
+//Cada cuánto pregunta el frontend al backend si ya hay pareja disponible
 const INTERVALO_POLLING_MS = 3000;
 
 const ContextoBusqueda = createContext(null);
@@ -14,6 +15,7 @@ const ProveedorBusqueda = ({ children }) => {
   const { ejecutar } = useApi();
   const navegar = useNavigate();
 
+  //Limpia el intervalo de polling para no dejar procesos corriendo en segundo plano
   const pararBusqueda = () => {
     if (intervaloRef.current) {
       clearInterval(intervaloRef.current);
@@ -36,13 +38,16 @@ const ProveedorBusqueda = ({ children }) => {
 
   const iniciarBusqueda = async () => {
     setMensajeError(null);
+    //Paramos cualquier búsqueda anterior antes de empezar una nueva, por si acaso
     pararBusqueda();
     try {
       const resultado = await ejecutar(apiClient.post("/llamadas/cola", {}));
+      //Si ya había alguien esperando, el backend nos devuelve la llamada directamente sin polling
       if (resultado?.llamadaId) {
         navegar(`/llamada/${resultado.llamadaId}`);
         return;
       }
+      //Si no hay nadie todavía, arrancamos el polling para preguntar cada X segundos
       intervaloRef.current = setInterval(comprobarCola, INTERVALO_POLLING_MS);
     } catch {
       setMensajeError(

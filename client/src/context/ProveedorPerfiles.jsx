@@ -42,6 +42,7 @@ const ProveedorPerfiles = ({ children }) => {
     await actualizarPerfilPropio({ foto: datos.secure_url });
   };
 
+  //Cuando el usuario inicia sesión cargamos su perfil; cuando la cierra lo limpiamos
   useEffect(() => {
     if (sesionIniciada) {
       obtenerPerfilPropio();

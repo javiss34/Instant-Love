@@ -21,6 +21,7 @@ const ProveedorAdmin = ({ children }) => {
 
   const cambiarActivo = async (userId) => {
     const datos = await ejecutar(apiClient.patch(`/admin/usuarios/${userId}/activo`));
+    //Usamos el valor que devuelve el servidor, no lo calculamos nosotros, para asegurar que está sincronizado
     if (datos) {
       setUsuarios((prev) =>
         prev.map((u) => (u.id === userId ? { ...u, activo: datos.activo } : u)),
@@ -48,6 +49,8 @@ const ProveedorAdmin = ({ children }) => {
             : r,
         ),
       );
+      //Si el reporte se sanciona, el backend desactiva la cuenta automáticamente.
+      //Actualizamos también el estado local de usuarios para que la tabla lo refleje sin recargar
       if (estado === "SANCIONADO") {
         const acusadoId = reportes.find((r) => r.id === reporteId)?.acusadoId;
         if (acusadoId) {

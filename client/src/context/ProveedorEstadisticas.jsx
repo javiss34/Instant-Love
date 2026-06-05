@@ -13,6 +13,7 @@ const ProveedorEstadisticas = ({ children }) => {
     if (datos) setEstadisticas(datos);
   };
 
+  //Se cargan automáticamente al entrar en la página de estadísticas
   useEffect(() => {
     obtenerEstadisticas();
   }, []);
