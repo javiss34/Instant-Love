@@ -1,10 +1,7 @@
 import { Link } from "react-router-dom";
 import EtiquetaRol from "./EtiquetaRol.jsx";
 /* Este componente es para cada fila de cada usuario que podrá ver el admin en su sección */
-const FilaUsuario = ({ usuario, esSelf, cambiando, cambiandoActivo, onCambiarRol, onCambiarActivo }) => {
-  //Para obtener la inicial hacemos exactamente igual que en Header
-  const inicial = (usuario.Profile?.nombre ?? usuario.username)?.[0]?.toUpperCase();
-
+const FilaUsuario = ({ usuario, esSelf, cambiando, cambiandoActivo, onCambiarRol, onSolicitarCambioActivo }) => {
   return (
 
     <tr className="border-b border-rose-50 last:border-0 hover:bg-rose-50/30 transition-colors">
@@ -46,29 +43,32 @@ const FilaUsuario = ({ usuario, esSelf, cambiando, cambiandoActivo, onCambiarRol
       <td className="px-6 py-4 text-gray-400 text-xs">
         {new Date(usuario.createdAt).toLocaleDateString("es-ES")}
       </td>
-      {/* Columna 5: Acciones */}
+      {/* Columna 5: Activar / Desactivar */}
       <td className="px-6 py-4">
-        <div className="flex items-center gap-3">
-          {!esSelf && (
-            <button
-              onClick={onCambiarActivo}
-              disabled={cambiandoActivo}
-              className={`text-xs font-semibold px-2.5 py-1 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                usuario.activo
-                  ? "bg-red-100 text-red-600 hover:bg-red-200"
-                  : "bg-green-100 text-green-600 hover:bg-green-200"
-              }`}
-            >
-              {cambiandoActivo ? "..." : usuario.activo ? "Desactivar" : "Activar"}
-            </button>
-          )}
-          <Link
-            to={`/admin/usuarios/${usuario.id}`}
-            className="text-xs font-semibold text-rose-500 hover:text-rose-700 transition-colors"
+        {esSelf ? (
+          <span className="text-xs text-gray-300 font-medium">—</span>
+        ) : (
+          <button
+            onClick={onSolicitarCambioActivo}
+            disabled={cambiandoActivo}
+            className={`text-xs font-semibold px-2.5 py-1 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+              usuario.activo
+                ? "bg-red-100 text-red-600 hover:bg-red-200"
+                : "bg-green-100 text-green-600 hover:bg-green-200"
+            }`}
           >
-            Ver detalle →
-          </Link>
-        </div>
+            {cambiandoActivo ? "..." : usuario.activo ? "Desactivar" : "Activar"}
+          </button>
+        )}
+      </td>
+      {/* Columna 6: Ver detalle */}
+      <td className="px-6 py-4">
+        <Link
+          to={`/admin/usuarios/${usuario.id}`}
+          className="text-xs font-semibold text-rose-500 hover:text-rose-700 transition-colors"
+        >
+          Ver detalle →
+        </Link>
       </td>
     </tr>
   );

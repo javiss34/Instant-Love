@@ -36,14 +36,26 @@ const ProveedorAdmin = ({ children }) => {
     if (datos) setReportes(datos);
   };
 
-  const cambiarEstadoReporte = async (reporteId, estado) => {
+  const cambiarEstadoReporte = async (reporteId, estado, nota_revision) => {
     const actualizado = await ejecutar(
-      apiClient.patch(`/reportes/${reporteId}/estado`, { estado }),
+      apiClient.patch(`/reportes/${reporteId}/estado`, { estado, nota_revision }),
     );
     if (actualizado) {
       setReportes((prev) =>
-        prev.map((r) => (r.id === reporteId ? { ...r, estado } : r)),
+        prev.map((r) =>
+          r.id === reporteId
+            ? { ...r, estado, nota_revision: actualizado.nota_revision ?? r.nota_revision }
+            : r,
+        ),
       );
+      if (estado === "SANCIONADO") {
+        const acusadoId = reportes.find((r) => r.id === reporteId)?.acusadoId;
+        if (acusadoId) {
+          setUsuarios((prev) =>
+            prev.map((u) => (u.id === acusadoId ? { ...u, activo: false } : u)),
+          );
+        }
+      }
     }
   };
 

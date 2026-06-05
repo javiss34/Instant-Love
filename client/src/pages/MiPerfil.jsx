@@ -1,19 +1,13 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import usePerfiles from "../hooks/usePerfiles.js";
 import useSesion from "../hooks/useSesion.js";
 import FormularioPerfil from "../components/FormularioPerfil.jsx";
-import BotonPrimario from "../components/ui/BotonPrimario.jsx";
+import FotoEditable from "../components/perfil/FotoEditable.jsx";
+import VistaLecturaPerfil from "../components/perfil/VistaLecturaPerfil.jsx";
+import ZonaPeligro from "../components/perfil/ZonaPeligro.jsx";
 
+/* Componente que delega la interfaz a sus hijos y se centra en juntarlos */
 const MiPerfil = () => {
-  const etiquetaGenero = { H: "Hombre", M: "Mujer", O: "Otro" };
-  const etiquetaPreferencia = { H: "Hombres", M: "Mujeres", AMBOS: "Ambos" };
-  const etiquetaRedSocial = {
-    INSTAGRAM: "Instagram",
-    WHATSAPP: "WhatsApp",
-    "TIK TOK": "TikTok",
-    OTRO: "Otro",
-  };
-
   const { perfilPropio, actualizarPerfilPropio, subirFotoPerfil, cargando, error } =
     usePerfiles();
   const { eliminarCuenta, cargando: cargandoSesion } = useSesion();
@@ -21,22 +15,10 @@ const MiPerfil = () => {
   const [modoEdicion, setModoEdicion] = useState(false);
   const [datosParaFormulario, setDatosParaFormulario] = useState(null);
   const [mensajeExito, setMensajeExito] = useState(false);
+  // confirmandoEliminar vive aquí porque FormularioPerfil también lo necesita
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
-  const [subiendoFoto, setSubiendoFoto] = useState(false);
-  const inputFotoRef = useRef(null);
 
-  const subirFoto = async (e) => {
-    const archivo = e.target.files?.[0];
-    if (!archivo) return;
-    setSubiendoFoto(true);
-    try {
-      await subirFotoPerfil(archivo);
-    } finally {
-      setSubiendoFoto(false);
-      e.target.value = "";
-    }
-  };
-
+  // Prepara los datos del perfil en el formato que espera FormularioPerfil
   useEffect(() => {
     if (perfilPropio) {
       const tipo = perfilPropio.red_social_tipo ?? "";
@@ -56,12 +38,11 @@ const MiPerfil = () => {
     }
   }, [perfilPropio, modoEdicion]);
 
+  // Estados de carga y error tempranos
   if (!perfilPropio && error) {
     return (
       <div className="flex-1 flex items-center justify-center p-4 bg-gradient-to-br from-rose-50 to-orange-50">
-        <p className="text-red-500 font-semibold">
-          No se pudo cargar el perfil.
-        </p>
+        <p className="text-red-500 font-semibold">No se pudo cargar el perfil.</p>
       </div>
     );
   }
@@ -69,15 +50,12 @@ const MiPerfil = () => {
   if (!perfilPropio) {
     return (
       <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-rose-50 to-orange-50">
-        <p className="text-rose-400 text-lg animate-pulse font-bold">
-          Cargando perfil...
-        </p>
+        <p className="text-rose-400 text-lg animate-pulse font-bold">Cargando perfil...</p>
       </div>
     );
   }
 
-  const inicial = perfilPropio.nombre?.[0].toUpperCase();
-
+  //maneja el evento guardar
   const procesarGuardar = async (datosValidados) => {
     const ok = await actualizarPerfilPropio(datosValidados);
     if (ok) {
@@ -91,30 +69,13 @@ const MiPerfil = () => {
   return (
     <div className="flex-1 bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50 w-full min-h-screen">
       <div className="max-w-3xl mx-auto px-4 py-8 sm:px-6 sm:py-12 w-full">
-        
+
+        {/* Tarjeta superior, que contiene el avatar editable, nombre, email, rol */}
         <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-6 sm:p-8 mb-6 flex flex-col sm:flex-row items-center gap-6">
-          <button
-            type="button"
-            onClick={() => inputFotoRef.current?.click()}
-            disabled={subiendoFoto}
-            className="relative w-24 h-24 rounded-full shrink-0 group focus:outline-none"
-            title="Cambiar foto de perfil"
-          >
-            <img
-              src={perfilPropio.foto}
-              alt={perfilPropio.nombre}
-              className="w-24 h-24 rounded-full object-cover shadow-md"
-            />
-            <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 group-disabled:opacity-100 transition-opacity">
-              <span className="text-white text-xl">{subiendoFoto ? "⏳" : "📷"}</span>
-            </div>
-          </button>
-          <input
-            ref={inputFotoRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={subirFoto}
+          <FotoEditable
+            foto={perfilPropio.foto}
+            nombre={perfilPropio.nombre}
+            subirFotoPerfil={subirFotoPerfil}
           />
           <div className="text-center sm:text-left flex-1">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800">
@@ -127,17 +88,17 @@ const MiPerfil = () => {
           </div>
         </div>
 
+        {/* Notificación de éxito tras guardar */}
         {mensajeExito && (
           <div className="mb-4 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl px-4 py-3 font-semibold">
             ✅ Perfil actualizado correctamente.
           </div>
         )}
 
+        {/* Tarjeta principal que serán datos o formulario de edición */}
         <div className="bg-white rounded-3xl shadow-sm border border-rose-100 p-6 sm:p-8">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-400 mb-5 text-center sm:text-left">
-            {modoEdicion
-              ? "Editando tus datos públicos"
-              : "Preferencias y contacto"}
+            {modoEdicion ? "Editando tus datos públicos" : "Preferencias y contacto"}
           </h2>
 
           {modoEdicion ? (
@@ -157,105 +118,19 @@ const MiPerfil = () => {
             />
           ) : (
             <div className="flex flex-col gap-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center sm:text-left">
-                <div className="bg-rose-50 rounded-2xl p-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
-                    Género
-                  </p>
-                  <p className="text-gray-800 font-bold">
-                    {etiquetaGenero[perfilPropio.genero] ?? "—"}
-                  </p>
-                </div>
-                <div className="bg-orange-50 rounded-2xl p-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
-                    Fecha de nacimiento
-                  </p>
-                  <p className="text-gray-800 font-bold">
-                    {perfilPropio.fecha_nacimiento
-                      ? new Date(
-                          perfilPropio.fecha_nacimiento,
-                        ).toLocaleDateString("es-ES")
-                      : "—"}
-                  </p>
-                </div>
-                <div className="bg-pink-50 rounded-2xl p-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
-                    Me interesan
-                  </p>
-                  <p className="text-gray-800 font-bold">
-                    {etiquetaPreferencia[perfilPropio.preferencia_genero] ??
-                      "—"}
-                  </p>
-                </div>
-                <div className="bg-purple-50 rounded-2xl p-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
-                    Red social tipo
-                  </p>
-                  <p className="text-gray-800 font-bold">
-                    {perfilPropio.red_social_tipo
-                      ? etiquetaRedSocial[perfilPropio.red_social_tipo]
-                      : "—"}
-                  </p>
-                </div>
-                <div className="bg-amber-50 rounded-2xl p-4 sm:col-span-2">
-                  <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-1">
-                    Usuario de contacto
-                  </p>
-                  <p className="text-gray-800 font-bold">
-                    {perfilPropio.red_social_usuario || "—"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-6 mt-2 border-t border-gray-100">
-                {!confirmandoEliminar ? (
-                  <div className="flex flex-wrap gap-3 items-center">
-                    <BotonPrimario
-                      variante="secundario"
-                      onClick={() => setModoEdicion(true)}
-                      className="flex-1 sm:flex-none px-6"
-                    >
-                      ✏️ Editar perfil
-                    </BotonPrimario>
-                    <BotonPrimario
-                      variante="peligro"
-                      onClick={() => setConfirmandoEliminar(true)}
-                      className="flex-1 sm:flex-none px-6"
-                    >
-                      Eliminar cuenta
-                    </BotonPrimario>
-                  </div>
-                ) : (
-                  <div className="bg-red-50 rounded-2xl p-6 border border-red-200">
-                    <p className="text-gray-800 font-bold mb-1">
-                      ¿Seguro que quieres eliminar tu cuenta?
-                    </p>
-                    <p className="text-gray-500 text-sm mb-5">
-                      Esta acción borrará todos tus datos de forma permanente.
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                      <BotonPrimario
-                        variante="peligro"
-                        onClick={eliminarCuenta}
-                        disabled={cargandoSesion}
-                        className="flex-1 sm:flex-none px-6"
-                      >
-                        {cargandoSesion ? "Eliminando..." : "Sí, eliminar"}
-                      </BotonPrimario>
-                      <BotonPrimario
-                        variante="secundario"
-                        onClick={() => setConfirmandoEliminar(false)}
-                        className="flex-1 sm:flex-none px-6"
-                      >
-                        Cancelar
-                      </BotonPrimario>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <VistaLecturaPerfil perfil={perfilPropio} />
+              <ZonaPeligro
+                confirmandoEliminar={confirmandoEliminar}
+                onIniciarEdicion={() => setModoEdicion(true)}
+                onIniciarEliminacion={() => setConfirmandoEliminar(true)}
+                onCancelarEliminacion={() => setConfirmandoEliminar(false)}
+                eliminarCuenta={eliminarCuenta}
+                cargandoSesion={cargandoSesion}
+              />
             </div>
           )}
         </div>
+
       </div>
     </div>
   );

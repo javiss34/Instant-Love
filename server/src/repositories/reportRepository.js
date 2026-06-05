@@ -37,8 +37,10 @@ const listarTodos = () => {
   });
 };
 
-const actualizarEstado = async (id, estado) => {
-  const [filas] = await Report.update({ estado }, { where: { id } });
+const actualizarEstado = async (id, estado, nota_revision) => {
+  const campos = { estado };
+  if (nota_revision !== undefined) campos.nota_revision = nota_revision;
+  const [filas] = await Report.update(campos, { where: { id } });
   if (filas === 0) return null;
   return Report.findByPk(id, {
     include: [

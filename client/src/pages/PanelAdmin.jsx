@@ -1,41 +1,42 @@
 import { useEffect, useState } from "react";
 import useAdmin from "../hooks/useAdmin.js";
 import useSesion from "../hooks/useSesion.js";
-import FilaUsuario from "../components/FilaUsuario.jsx";
+import TablaUsuarios from "../components/admin/TablaUsuarios.jsx";
+import ListaReportes from "../components/admin/ListaReportes.jsx";
+import ModalDesactivar from "../components/admin/ModalDesactivar.jsx";
+import ModalRevision from "../components/admin/ModalRevision.jsx";
+import ModalSancion from "../components/admin/ModalSancion.jsx";
 
-const ESTADOS = ["PENDIENTE", "REVISADO", "SANCIONADO"];
-
-const coloresEstado = {
-  PENDIENTE: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  REVISADO: "bg-blue-100 text-blue-700 border-blue-200",
-  SANCIONADO: "bg-red-100 text-red-600 border-red-200",
-};
-
+/* Componente orquestador: gestiona estado, hooks y manejadores.
+   Delega todo el renderizado en los componentes hijos. */
 const PanelAdmin = () => {
-  const { usuarios, reportes, cargando, cargarUsuarios, cambiarRol, cambiarActivo, cargarReportes, cambiarEstadoReporte } = useAdmin();
+  const {
+    usuarios,
+    reportes,
+    cargando,
+    cargarUsuarios,
+    cambiarRol,
+    cambiarActivo,
+    cargarReportes,
+    cambiarEstadoReporte,
+  } = useAdmin();
   const { usuario: sesion } = useSesion();
+
   const [cambiando, setCambiando] = useState(null);
   const [cambiandoActivo, setCambiandoActivo] = useState(null);
   const [cambiandoReporte, setCambiandoReporte] = useState(null);
   const [error, setError] = useState(null);
+  // Cada modal se abre pasando sus datos; null = cerrado
+  const [modalDesactivar, setModalDesactivar] = useState(null);
+  const [modalRevision, setModalRevision] = useState(null);    
+  const [modalSancion, setModalSancion] = useState(null);       
 
   useEffect(() => {
     cargarUsuarios();
     cargarReportes();
   }, []);
 
-  const handleActivo = async (userId) => {
-    setCambiandoActivo(userId);
-    setError(null);
-    try {
-      await cambiarActivo(userId);
-    } catch (err) {
-      setError(err.response?.data?.mensaje ?? "Error al cambiar el estado de la cuenta");
-    } finally {
-      setCambiandoActivo(null);
-    }
-  };
-
+  //Maneja el cambio de rol
   const handleRol = async (userId, nuevoRol) => {
     setCambiando(userId);
     setError(null);
@@ -48,15 +49,56 @@ const PanelAdmin = () => {
     }
   };
 
-  const handleEstadoReporte = async (reporteId, nuevoEstado) => {
+  const confirmarDesactivar = async () => {
+    const { userId } = modalDesactivar;
+    setModalDesactivar(null);
+    setCambiandoActivo(userId);
+    setError(null);
+    try {
+      await cambiarActivo(userId);
+    } catch (err) {
+      setError(err.response?.data?.mensaje ?? "Error al cambiar el estado de la cuenta");
+    } finally {
+      setCambiandoActivo(null);
+    }
+  };
+
+
+  // Decide si ejecutar directamente o abrir el modal correspondiente
+  const abrirCambioEstado = (reporteId, nuevoEstado) => {
+    if (nuevoEstado === "REVISADO") {
+      setModalRevision({ reporteId });
+      return;
+    }
+    if (nuevoEstado === "SANCIONADO") {
+      setModalSancion({ reporteId });
+      return;
+    }
+    ejecutarCambioEstado(reporteId, nuevoEstado);
+  };
+
+  const ejecutarCambioEstado = async (reporteId, nuevoEstado, nota_revision) => {
     setCambiandoReporte(reporteId);
     try {
-      await cambiarEstadoReporte(reporteId, nuevoEstado);
+      await cambiarEstadoReporte(reporteId, nuevoEstado, nota_revision);
     } catch {
-      // fallo silencioso: el badge no cambia si la petición falla
+      // fallo silencioso
     } finally {
       setCambiandoReporte(null);
     }
+  };
+
+  // ModalRevision emite la nota ya validada al confirmar
+  const confirmarRevision = async (nota) => {
+    const { reporteId } = modalRevision;
+    setModalRevision(null);
+    await ejecutarCambioEstado(reporteId, "REVISADO", nota);
+  };
+
+  const confirmarSancion = async () => {
+    const { reporteId } = modalSancion;
+    setModalSancion(null);
+    await ejecutarCambioEstado(reporteId, "SANCIONADO");
   };
 
   return (
@@ -74,89 +116,47 @@ const PanelAdmin = () => {
           </div>
         )}
 
-        {/* Tabla de usuarios */}
-        {cargando && usuarios.length === 0 ? (
-          <p className="text-center text-gray-400 text-lg animate-pulse">Cargando...</p>
-        ) : (
-          <>
-            <div className="bg-white rounded-3xl shadow-sm border border-rose-100 overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-rose-100 text-left">
-                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-400">Usuario</th>
-                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-400">Email</th>
-                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-400">Rol</th>
-                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-400">Registro</th>
-                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-400"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {usuarios.map((u) => (
-                    <FilaUsuario
-                      key={u.id}
-                      usuario={u}
-                      esSelf={u.id === sesion?.id}
-                      cambiando={cambiando === u.id}
-                      cambiandoActivo={cambiandoActivo === u.id}
-                      onCambiarRol={(nuevoRol) => handleRol(u.id, nuevoRol)}
-                      onCambiarActivo={() => handleActivo(u.id)}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <TablaUsuarios
+          usuarios={usuarios}
+          cargando={cargando}
+          sesionId={sesion?.id}
+          cambiando={cambiando}
+          cambiandoActivo={cambiandoActivo}
+          onCambiarRol={handleRol}
+          onSolicitarCambioActivo={(u) =>
+            setModalDesactivar({ userId: u.id, username: u.username, activo: u.activo })
+          }
+        />
 
-            {/* Sección de reportes */}
-            <div className="mt-14">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">🚨 Reportes</h2>
-
-              {reportes.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">No hay reportes registrados.</p>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  {reportes.map((r) => (
-                    <div
-                      key={r.id}
-                      className="bg-white rounded-2xl px-5 py-4 flex items-center gap-4 shadow-sm border border-rose-100"
-                    >
-                      {/* Info del reporte */}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-gray-800 font-medium text-sm">{r.motivo}</p>
-                        <p className="text-gray-400 text-xs mt-1">
-                          <span className="font-semibold">@{r.Autor?.username ?? "—"}</span>
-                          {" → "}
-                          <span className="font-semibold text-rose-500">@{r.Destino?.username ?? "—"}</span>
-                          {" · "}
-                          {new Date(r.createdAt).toLocaleDateString("es-ES")}
-                        </p>
-                      </div>
-
-                      {/* Selector de estado */}
-                      <div className="flex gap-2 shrink-0">
-                        {ESTADOS.map((estado) => (
-                          <button
-                            key={estado}
-                            disabled={cambiandoReporte === r.id}
-                            onClick={() => handleEstadoReporte(r.id, estado)}
-                            className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-opacity ${
-                              r.estado === estado
-                                ? coloresEstado[estado]
-                                : "bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100"
-                            } ${cambiandoReporte === r.id ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                          >
-                            {estado}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </>
-        )}
+        <ListaReportes
+          reportes={reportes}
+          cambiandoReporte={cambiandoReporte}
+          abrirCambioEstado={abrirCambioEstado}
+        />
 
       </section>
+
+      {modalDesactivar && (
+        <ModalDesactivar
+          datos={modalDesactivar}
+          onConfirmar={confirmarDesactivar}
+          onCancelar={() => setModalDesactivar(null)}
+        />
+      )}
+
+      {modalRevision && (
+        <ModalRevision
+          onConfirmar={confirmarRevision}
+          onCancelar={() => setModalRevision(null)}
+        />
+      )}
+
+      {modalSancion && (
+        <ModalSancion
+          onConfirmar={confirmarSancion}
+          onCancelar={() => setModalSancion(null)}
+        />
+      )}
     </div>
   );
 };

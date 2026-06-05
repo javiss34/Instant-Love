@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { DataTypes } from "sequelize";
 import { sequelize, conectarDB } from "./config/db.js";
 import "./models/index.js";
 import authRoutes from "./routes/authRoutes.js";
@@ -35,6 +36,15 @@ app.use(errorHandler);
 const iniciarServidor = async () => {
   await conectarDB();
   await sequelize.sync();
+  // Añadir columnas nuevas que sync() no crea en tablas ya existentes
+  const qi = sequelize.getQueryInterface();
+  const columnasReports = await qi.describeTable("Reports");
+  if (!columnasReports.nota_revision) {
+    await qi.addColumn("Reports", "nota_revision", {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    });
+  }
   console.log("Modelos sincronizados con instantlovedb");
   app.listen(PORT, () => {
     console.log(

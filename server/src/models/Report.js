@@ -17,6 +17,10 @@ const Report = sequelize.define(
       type: DataTypes.ENUM("PENDIENTE", "REVISADO", "SANCIONADO"),
       defaultValue: "PENDIENTE",
     },
+    nota_revision: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

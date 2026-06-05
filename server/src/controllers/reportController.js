@@ -15,7 +15,8 @@ const obtenerReportes = async (req, res) => {
 };
 
 const actualizarEstadoReporte = async (req, res) => {
-  const reporte = await reportService.actualizarEstado(req.params.id, req.body.estado);
+  const { estado, nota_revision } = req.body;
+  const reporte = await reportService.actualizarEstado(req.params.id, estado, nota_revision);
   res.status(200).json(reporte);
 };
 

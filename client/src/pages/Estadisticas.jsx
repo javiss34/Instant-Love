@@ -4,13 +4,27 @@ import Estadistica from "../components/Estadistica.jsx";
 import Match from "../components/Match.jsx";
 import Reporte from "../components/Reporte.jsx";
 
+/* Vista de las estadisticas del usuario */
 const Estadisticas = () => {
   const { estadisticas, cargando } = useEstadisticas();
 
+  //Creamos un array de objetos para recorrer las tarjetas sobre las estadisticas que queremos mostrar facilmente
   const datos = [
-    { icono: "💬", etiqueta: "Citas realizadas", valor: estadisticas?.citas ?? 0 },
-    { icono: "⏱️", etiqueta: "Minutos de conversación", valor: estadisticas?.minutos ?? 0 },
-    { icono: "✨", etiqueta: "Conexiones nuevas", valor: estadisticas?.conexiones ?? 0 },
+    {
+      icono: "💬",
+      etiqueta: "Citas realizadas",
+      valor: estadisticas?.citas ?? 0,
+    },
+    {
+      icono: "⏱️",
+      etiqueta: "Minutos de conversación",
+      valor: estadisticas?.minutos ?? 0,
+    },
+    {
+      icono: "✨",
+      etiqueta: "Conexiones nuevas",
+      valor: estadisticas?.conexiones ?? 0,
+    },
   ];
 
   const matches = estadisticas?.matches ?? [];
@@ -19,42 +33,52 @@ const Estadisticas = () => {
   return (
     <div className="flex-1 bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50">
       <section className="max-w-7xl mx-auto px-6 pt-16 pb-20">
-
         <div className="text-center mb-12">
           <span className="text-5xl">📊</span>
-          <h1 className="text-4xl font-extrabold text-gray-800 mt-4">Tus Estadísticas</h1>
-          <p className="text-gray-500 mt-3 text-lg">Un resumen de tu actividad en InstantLove.</p>
+          <h1 className="text-4xl font-extrabold text-gray-800 mt-4">
+            TUS ESTADÍSTICAS
+          </h1>
+          <p className="text-gray-500 mt-3 text-lg">
+            Un resumen de tu actividad en InstantLove.
+          </p>
         </div>
 
+        {/* Sección de las tarjetas sobre las estadísticas */}
         {cargando ? (
           <p className="text-center text-gray-400 text-lg">Cargando...</p>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {datos.map((stat) => (
-                <Estadistica key={stat.etiqueta} {...stat} />
+                <Estadistica key={stat.etiqueta} {...stat} />//{...stat} desempoaqueta el objeto y pasa por todas sus variables como props
               ))}
             </div>
-
+            {/* Sección de matches */}
             <div className="mt-12">
               <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                 💕 Tus Matches
               </h2>
               {matches.length === 0 ? (
-                <p className="text-gray-400 text-center py-8">Aún no tienes ningún match. ¡Sigue intentándolo!</p>
+                <p className="text-gray-400 text-center py-8">
+                  Aún no tienes ningún match. ¡Sigue intentándolo!
+                </p>
               ) : (
                 <div className="flex flex-col gap-4">
-                  {matches.filter((match) => match?.nombre && match?.foto).map((match, i) => (
-                    <Match key={i} match={match} />
-                  ))}
+                  {matches
+                    .filter((match) => match?.nombre && match?.foto)
+                    .map((match, i) => (
+                      <Match key={i} match={match} />
+                    ))}
                 </div>
               )}
             </div>
-
+            {/* Sección de reportes para el admin */}
             {reportes !== null && (
               <div className="mt-12">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800">Últimos reportes</h2>
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    Últimos reportes
+                  </h2>
                   <Link
                     to="/admin"
                     className="text-sm font-semibold text-rose-500 hover:text-rose-700 transition-colors"
@@ -63,9 +87,12 @@ const Estadisticas = () => {
                   </Link>
                 </div>
                 {reportes.length === 0 ? (
-                  <p className="text-gray-400 text-center py-8">No hay reportes recientes.</p>
+                  <p className="text-gray-400 text-center py-8">
+                    No hay reportes recientes.
+                  </p>
                 ) : (
                   <div className="flex flex-col gap-3">
+                    {/* como aqui queremos ver quien ha denunciado a quien, ponemos mostrarDestino */}
                     {reportes.map((r) => (
                       <Reporte key={r.id} reporte={r} mostrarDestino />
                     ))}
@@ -75,7 +102,6 @@ const Estadisticas = () => {
             )}
           </>
         )}
-
       </section>
     </div>
   );
