@@ -172,8 +172,8 @@ const ProveedorVideollamada = ({ children }) => {
           voto: quiereMatch ? "LIKE" : "NEXT",
         }),
       );
-    } catch {
-      // fallo silencioso, continuamos con la navegación
+    } catch (err) {
+      console.error("[VOTO] Error al registrar voto:", err?.response?.data ?? err?.message);
     }
     const destino = accion === "siguiente" ? "/sala-espera" : "/inicio";
     await finalizarYNavegar(idLlamada, destino);
