@@ -35,8 +35,10 @@ app.use(errorHandler);
 
 const iniciarServidor = async () => {
   await conectarDB();
+  //sync() solo crea las tablas si no existen, no toca las que ya están creadas
   await sequelize.sync();
-  // Añadir columnas nuevas que sync() no crea en tablas ya existentes
+  //Como sync() no añade columnas nuevas a tablas existentes, lo hacemos a mano.
+  //Primero miramos si la columna ya existe para no intentar crearla dos veces
   const qi = sequelize.getQueryInterface();
   const columnasReports = await qi.describeTable("Reports");
   if (!columnasReports.nota_revision) {

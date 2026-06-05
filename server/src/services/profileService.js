@@ -2,6 +2,7 @@ import ApiError from "../utils/ApiError.js";
 import profileRepository from "../repositories/profileRepository.js";
 import userRepository from "../repositories/userRepository.js";
 
+//Solo dejamos que el usuario pueda modificar estos campos de su perfil
 const CAMPOS_EDITABLES = [
   "nombre",
   "red_social_tipo",
@@ -23,6 +24,7 @@ const obtenerPublico = async (id) => {
 };
 
 const actualizarPropio = async (usuarioId, datos) => {
+  //Filtramos el body para que solo lleguen al repositorio los campos que se pueden cambiar
   const camposPermitidos = {};
   for (const campo of CAMPOS_EDITABLES) {
     if (datos[campo] !== undefined) {
@@ -39,6 +41,7 @@ const actualizarPropio = async (usuarioId, datos) => {
 };
 
 const eliminarPropio = async (usuarioId) => {
+  //Borramos el usuario directamente; el perfil se elimina en cascada por la relación de la BD
   const eliminados = await userRepository.eliminarPorId(usuarioId);
   if (eliminados === 0) throw new ApiError(404, "Usuario no encontrado.");
 };

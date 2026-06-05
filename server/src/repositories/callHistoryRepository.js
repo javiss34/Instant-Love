@@ -29,11 +29,12 @@ const estadisticasPorUsuario = async (userId) => {
     where: {
       [Op.or]: [{ user1Id: userId }, { user2Id: userId }],
       estado: "COMPLETADA",
-      duracion: { [Op.gt]: 0 },//Solo se cuentan las llamadas donde la duración es >0
+      duracion: { [Op.gt]: 0 }, //Solo contamos llamadas que tuvieron duración real, no intentos fallidos
     },
     attributes: ["duracion", "user1Id", "user2Id"],
   });
   const citas = llamadas.length;
+  //Sumamos todos los segundos y los convertimos a minutos redondeando hacia abajo
   const minutos = Math.floor(
     llamadas.reduce((suma, l) => suma + (l.duracion || 0), 0) / 60,
   );

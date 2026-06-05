@@ -4,10 +4,12 @@ import outcomeRepository from "../repositories/outcomeRepository.js";
 import profileRepository from "../repositories/profileRepository.js";
 import * as colaEspera from "../utils/colaEspera.js";
 
+//Solo dejamos actualizar estos dos campos al finalizar una llamada
 const CAMPOS_FINALIZAR = ["duracion", "estado"];
 
 const iniciar = async (user1Id, user2Id) => {
   if (!user2Id) throw new ApiError(400, "Faltan datos de usuario a llamar");
+  //Creamos el historial de la llamada y su registro de votos vacío a la vez
   const llamada = await callHistoryRepository.crear({ user1Id, user2Id });
   await outcomeRepository.crearParaLlamada(llamada.id);
   return llamada;
@@ -17,6 +19,7 @@ const finalizar = async (id, usuarioId, datos) => {
   const llamada = await callHistoryRepository.buscarPorId(id);
   if (!llamada) throw new ApiError(404, "Llamada no encontrada");
 
+  //Solo el que participó en la llamada puede finalizarla
   const esParticipante =
     llamada.user1Id === usuarioId || llamada.user2Id === usuarioId;
   if (!esParticipante) {
@@ -26,6 +29,7 @@ const finalizar = async (id, usuarioId, datos) => {
     );
   }
 
+  //Filtramos para que solo se actualicen los campos permitidos
   const camposPermitidos = {};
   for (const campo of CAMPOS_FINALIZAR) {
     if (datos[campo] !== undefined) camposPermitidos[campo] = datos[campo];
@@ -35,6 +39,7 @@ const finalizar = async (id, usuarioId, datos) => {
 };
 
 const crearMatch = async (userIdA, userIdB) => {
+  //Sacamos a los dos de la cola antes de crear la llamada para que no les vuelvan a emparejar
   colaEspera.sacarDeCola(userIdA);
   colaEspera.sacarDeCola(userIdB);
 
@@ -43,18 +48,21 @@ const crearMatch = async (userIdA, userIdB) => {
     user2Id: userIdB,
   });
   await outcomeRepository.crearParaLlamada(llamada.id);
+  //Guardamos el resultado para userIdB, que lo recogerá en su próximo polling
   colaEspera.guardarResultado(userIdB, llamada.id);
 
   return llamada;
 };
 
 const unirseACola = async (userId) => {
+  //Si ya hay un resultado esperando para este usuario, lo devolvemos directamente
   const llamadaIdPendiente = colaEspera.obtenerResultado(userId);
   if (llamadaIdPendiente) {
     colaEspera.eliminarResultado(userId);
     return { status: "match_encontrado", llamadaId: llamadaIdPendiente };
   }
 
+  //Necesitamos el género y la preferencia para buscar una pareja compatible
   const perfil = await profileRepository.buscarPorId(userId);
   if (!perfil) throw new ApiError(404, "Perfil no encontrado.");
 
@@ -67,6 +75,7 @@ const unirseACola = async (userId) => {
   colaEspera.unirseACola(usuarioEnCola);
   const pareja = colaEspera.buscarPareja(usuarioEnCola);
 
+  //Si no hay nadie compatible, el usuario se queda esperando en la cola
   if (!pareja) {
     return { status: "buscando" };
   }
@@ -83,6 +92,7 @@ const obtenerParticipante = async (callId, usuarioId) => {
     llamada.user1Id === usuarioId || llamada.user2Id === usuarioId;
   if (!esParticipante) throw new ApiError(403, "No eres participante de esta llamada");
 
+  //Dependiendo de si eres user1 o user2, el otro participante es el Receptor o el Emisor
   const otro =
     llamada.user1Id === usuarioId ? llamada.Receptor : llamada.Emisor;
 
@@ -94,6 +104,7 @@ const obtenerParticipante = async (callId, usuarioId) => {
 };
 
 const comprobarEstadoCola = (userId) => {
+  //El frontend hace polling con esto para saber si ya le han encontrado pareja
   const llamadaId = colaEspera.obtenerResultado(userId);
   if (llamadaId) {
     colaEspera.eliminarResultado(userId);

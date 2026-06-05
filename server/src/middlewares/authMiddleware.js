@@ -5,6 +5,8 @@ if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET no está definido en las variables de entorno.");
 }
 
+//Comprueba que la petición lleva un token JWT válido
+//Si es correcto, guarda los datos del usuario en req.usuario para usarlos en el controlador
 const verificarToken = (req, res, next) => {
   const cabecera = req.headers.authorization;
 
@@ -12,6 +14,7 @@ const verificarToken = (req, res, next) => {
     throw new ApiError(401, "Acceso denegado. Es necesario un token.");
   }
 
+  //Aceptamos el token con o sin el prefijo "Bearer "
   const token = cabecera.startsWith("Bearer ")
     ? cabecera.slice(7)
     : cabecera;
@@ -24,6 +27,7 @@ const verificarToken = (req, res, next) => {
   }
 };
 
+//Se usa después de verificarToken para proteger rutas que solo puede usar un admin
 const esAdmin = (req, res, next) => {
   if (!req.usuario || req.usuario.rol !== "ADMIN") {
     throw new ApiError(403, "Acceso denegado. Se requiere rol de administrador.");

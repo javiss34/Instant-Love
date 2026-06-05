@@ -5,6 +5,7 @@ import reportRepository from "../repositories/reportRepository.js";
 const listarUsuarios = () => userRepository.listarTodos();
 
 const cambiarRol = async (adminId, userId, nuevoRol) => {
+  //Un admin no puede quitarse el rol a sí mismo para evitar quedarse sin acceso
   if (adminId === userId) throw new ApiError(400, "No puedes cambiar tu propio rol");
   if (!["USER", "ADMIN"].includes(nuevoRol)) throw new ApiError(400, "Rol no válido");
   const usuario = await userRepository.buscarPorId(userId);
@@ -14,9 +15,11 @@ const cambiarRol = async (adminId, userId, nuevoRol) => {
 };
 
 const cambiarActivo = async (adminId, userId) => {
+  //Un admin no puede desactivar su propia cuenta por la misma razón
   if (adminId === userId) throw new ApiError(400, "No puedes desactivar tu propia cuenta");
   const usuario = await userRepository.buscarPorId(userId);
   if (!usuario) throw new ApiError(404, "Usuario no encontrado");
+  //Alternamos el estado: si estaba activo lo desactivamos y viceversa
   await usuario.update({ activo: !usuario.activo });
   return { id: usuario.id, activo: usuario.activo };
 };

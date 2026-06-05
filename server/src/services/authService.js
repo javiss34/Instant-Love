@@ -6,11 +6,14 @@ import userRepository from "../repositories/userRepository.js";
 import profileRepository from "../repositories/profileRepository.js";
 import subscriptionRepository from "../repositories/subscriptionRepository.js";
 
+//El token guarda solo el id y el rol, que es lo que necesitamos para las comprobaciones de permisos
+//Dura 14 días para no tener que volver a iniciar sesión constantemente
 const generarToken = (usuario) =>
   jwt.sign({ id: usuario.id, rol: usuario.rol }, process.env.JWT_SECRET, {
     expiresIn: "14d",
   });
 
+//Devolvemos solo los datos necesarios del usuario, sin exponer la contraseña ni campos internos
 const usuarioPublico = (usuario) => ({
   id: usuario.id,
   username: usuario.username,

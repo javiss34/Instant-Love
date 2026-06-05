@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import { Report, User } from "../models/index.js";
 
 const crear = (datos) => {
@@ -10,6 +11,12 @@ const listar = () => {
 
 const listarRecientes = (limite = 10) => {
   return Report.findAll({
+    where: {
+      [Op.or]: [
+        { reporteroId: { [Op.not]: null } },
+        { acusadoId: { [Op.not]: null } },
+      ],
+    },
     order: [["createdAt", "DESC"]],
     limit: limite,
     include: [
@@ -27,8 +34,16 @@ const listarPorAcusado = (acusadoId) => {
   });
 };
 
+//Si los dos usuarios están eliminados el reporte no tiene sentido mostrarlos
+//Lo ocultamos cuando los dos ids son null a la vez
 const listarTodos = () => {
   return Report.findAll({
+    where: {
+      [Op.or]: [
+        { reporteroId: { [Op.not]: null } },
+        { acusadoId: { [Op.not]: null } },
+      ],
+    },
     order: [["createdAt", "DESC"]],
     include: [
       { model: User, as: "Autor", attributes: ["username"] },
