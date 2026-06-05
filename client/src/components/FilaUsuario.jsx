@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import EtiquetaRol from "./EtiquetaRol.jsx";
+
 /* Este componente es para cada fila de cada usuario que podrá ver el admin en su sección */
 const FilaUsuario = ({ usuario, esSelf, cambiando, cambiandoActivo, onCambiarRol, onSolicitarCambioActivo }) => {
   return (
-
     <tr className="border-b border-rose-50 last:border-0 hover:bg-rose-50/30 transition-colors">
-      {/* Columna 1: Avatar y nombre */}
-      <td className="px-6 py-4">
+      {/* Columna 1: Avatar y nombre (Ajuste de padding: px-4 sm:px-6) */}
+      <td className="px-4 sm:px-6 py-4">
         <div className="flex items-center gap-3">
           <img
             src={usuario.Profile?.foto}
@@ -19,10 +19,12 @@ const FilaUsuario = ({ usuario, esSelf, cambiando, cambiandoActivo, onCambiarRol
           </div>
         </div>
       </td>
+      
       {/* Columna 2: Email */}
-      <td className="px-6 py-4 text-gray-600">{usuario.email}</td>
+      <td className="px-4 sm:px-6 py-4 text-gray-600">{usuario.email}</td>
+      
       {/* Columna 3: Roles */}
-      <td className="px-6 py-4">
+      <td className="px-4 sm:px-6 py-4">
         {esSelf ? (
           /* Si el administrador ve su propia fila no le dejamos cambiar su rol */
           <EtiquetaRol rol={usuario.rol} />
@@ -39,12 +41,14 @@ const FilaUsuario = ({ usuario, esSelf, cambiando, cambiandoActivo, onCambiarRol
           </select>
         )}
       </td>
+      
       {/* Columna4: Fecha de registro formateada */}
-      <td className="px-6 py-4 text-gray-400 text-xs">
+      <td className="px-4 sm:px-6 py-4 text-gray-400 text-xs">
         {new Date(usuario.createdAt).toLocaleDateString("es-ES")}
       </td>
+      
       {/* Columna 5: Activar / Desactivar */}
-      <td className="px-6 py-4">
+      <td className="px-4 sm:px-6 py-4">
         {esSelf ? (
           <span className="text-xs text-gray-300 font-medium">—</span>
         ) : (
@@ -61,11 +65,12 @@ const FilaUsuario = ({ usuario, esSelf, cambiando, cambiandoActivo, onCambiarRol
           </button>
         )}
       </td>
+      
       {/* Columna 6: Ver detalle */}
-      <td className="px-6 py-4">
+      <td className="px-4 sm:px-6 py-4">
         <Link
           to={`/admin/usuarios/${usuario.id}`}
-          className="text-xs font-semibold text-rose-500 hover:text-rose-700 transition-colors"
+          className="text-xs font-semibold text-rose-500 hover:text-rose-700 transition-colors whitespace-nowrap"
         >
           Ver detalle →
         </Link>
