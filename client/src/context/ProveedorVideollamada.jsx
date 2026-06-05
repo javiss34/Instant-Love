@@ -167,10 +167,9 @@ const ProveedorVideollamada = ({ children }) => {
     setModal(modalInicial);
 
     try {
-      //Registramos el voto en el backend. Siempre enviamos NEXT para no generar conexiones
       await ejecutar(
         apiClient.put(`/voto/${idLlamada}`, {
-          voto: "NEXT",
+          voto: quiereMatch ? "LIKE" : "NEXT",
         }),
       );
     } catch {
