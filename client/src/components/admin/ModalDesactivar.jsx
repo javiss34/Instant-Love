@@ -7,7 +7,7 @@ const ModalDesactivar = ({ datos, onConfirmar, onCancelar }) => {
       aria-modal="true"
       aria-labelledby="modal-desactivar-titulo"
     >
-      <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
         <p className="text-3xl mb-3">{datos.activo ? "🔒" : "🔓"}</p>
         <h2
           id="modal-desactivar-titulo"
@@ -34,10 +34,10 @@ const ModalDesactivar = ({ datos, onConfirmar, onCancelar }) => {
             </>
           )}
         </p>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={onConfirmar}
-            className={`flex-1 text-white font-semibold py-3 rounded-xl transition-colors text-sm ${
+            className={`flex-1 text-white font-semibold py-3 rounded-xl transition-colors text-sm w-full ${
               datos.activo
                 ? "bg-red-500 hover:bg-red-600"
                 : "bg-green-500 hover:bg-green-600"
@@ -47,7 +47,7 @@ const ModalDesactivar = ({ datos, onConfirmar, onCancelar }) => {
           </button>
           <button
             onClick={onCancelar}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors text-sm"
+            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors text-sm w-full"
           >
             Cancelar
           </button>

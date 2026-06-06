@@ -25,7 +25,7 @@ const ModalRevision = ({ onConfirmar, onCancelar }) => {
       aria-modal="true"
       aria-labelledby="modal-revision-titulo"
     >
-      <div className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl">
         <h2
           id="modal-revision-titulo"
           className="text-gray-800 font-bold text-lg mb-1"
@@ -43,16 +43,17 @@ const ModalRevision = ({ onConfirmar, onCancelar }) => {
           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-300"
         />
         {errorNota && <p className="text-red-500 text-xs mt-1">{errorNota}</p>}
-        <div className="flex gap-3 mt-5">
+        
+        <div className="flex flex-col sm:flex-row gap-3 mt-5">
           <button
             onClick={handleConfirmar}
-            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition-colors text-sm"
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition-colors text-sm w-full"
           >
             Confirmar revisión
           </button>
           <button
             onClick={onCancelar}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors text-sm"
+            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors text-sm w-full"
           >
             Cancelar
           </button>

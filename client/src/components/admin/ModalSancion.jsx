@@ -7,7 +7,7 @@ const ModalSancion = ({ onConfirmar, onCancelar }) => {
       aria-modal="true"
       aria-labelledby="modal-sancion-titulo"
     >
-      <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl text-center">
+      <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center">
         <p className="text-3xl mb-3">⛔</p>
         <h2
           id="modal-sancion-titulo"
@@ -22,16 +22,17 @@ const ModalSancion = ({ onConfirmar, onCancelar }) => {
           </span>
           . Esta acción puede revertirse desde la tabla de usuarios.
         </p>
-        <div className="flex gap-3">
+        
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={onConfirmar}
-            className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition-colors text-sm"
+            className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-xl transition-colors text-sm w-full"
           >
             Sí, sancionar
           </button>
           <button
             onClick={onCancelar}
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors text-sm"
+            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors text-sm w-full"
           >
             Cancelar
           </button>
