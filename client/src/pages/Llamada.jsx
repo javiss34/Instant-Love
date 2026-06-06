@@ -25,7 +25,7 @@ const Llamada = () => {
     temporizadorActivo,
     otroUsuario,
     unirseASala,
-    salir,
+    limpiarSincrono,
     pedirMatch,
     responderMatch,
     enviarReporte,
@@ -56,9 +56,9 @@ const Llamada = () => {
     if (contenedorRef.current && usuario) {
       unirseASala(contenedorRef.current, usuario, id);
     }
-    //Sino se sale
+    //React no puede hacer await en el cleanup, así que usamos la versión síncrona
     return () => {
-      salir();
+      limpiarSincrono();
     };
   }, [usuario]); // solo se ejecuta cuando el usuario cambia
 

@@ -55,4 +55,7 @@ const iniciarServidor = async () => {
   });
 };
 
-iniciarServidor();
+iniciarServidor().catch((err) => {
+  console.error("Error fatal al arrancar el servidor:", err);
+  process.exit(1);
+});

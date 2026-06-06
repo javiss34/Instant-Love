@@ -136,6 +136,16 @@ const ProveedorVideollamada = ({ children }) => {
     await destruirFrame();
   };
 
+  //Versión síncrona para usarla en el cleanup de useEffect, donde React no puede await
+  //Paramos el timer de golpe y enviamos el leave fire-and-forget antes de destruir el iframe
+  const limpiarSincrono = () => {
+    detenerTemporizador();
+    if (!frameRef.current) return;
+    frameRef.current.leave().catch(() => {});
+    frameRef.current.destroy();
+    frameRef.current = null;
+  };
+
   const finalizarYNavegar = async (idLlamada, destino) => {
     setColgando(true);
     try {
@@ -192,6 +202,7 @@ const ProveedorVideollamada = ({ children }) => {
     otroUsuario,
     unirseASala,
     salir,
+    limpiarSincrono,
     pedirMatch,
     responderMatch,
     enviarReporte,

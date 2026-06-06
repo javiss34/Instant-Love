@@ -32,8 +32,16 @@ const PanelAdmin = () => {
   const [modalSancion, setModalSancion] = useState(null);       
 
   useEffect(() => {
-    cargarUsuarios();
-    cargarReportes();
+    //Función dentro del useEffect para que solo se ejecute cuando se ejecuta el useEffect y no cada vez que se re-renderize la página
+    const cargar = async () => {
+      try {
+        await cargarUsuarios();
+        await cargarReportes();
+      } catch {
+        setError("No se pudieron cargar los datos del panel. Recarga la página.");
+      }
+    };
+    cargar();
   }, []);
 
   //Maneja el cambio de rol
@@ -81,8 +89,8 @@ const PanelAdmin = () => {
     setCambiandoReporte(reporteId);
     try {
       await cambiarEstadoReporte(reporteId, nuevoEstado, nota_revision);
-    } catch {
-      // fallo silencioso
+    } catch (err) {
+      setError(err.response?.data?.mensaje ?? "No se pudo actualizar el estado del reporte.");
     } finally {
       setCambiandoReporte(null);
     }

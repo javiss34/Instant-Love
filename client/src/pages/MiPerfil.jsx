@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import usePerfiles from "../hooks/usePerfiles.js";
 import useSesion from "../hooks/useSesion.js";
 import FormularioPerfil from "../components/FormularioPerfil.jsx";
@@ -17,6 +17,12 @@ const MiPerfil = () => {
   const [mensajeExito, setMensajeExito] = useState(false);
   // confirmandoEliminar vive aquí porque FormularioPerfil también lo necesita
   const [confirmandoEliminar, setConfirmandoEliminar] = useState(false);
+  const timeoutExitoRef = useRef(null);
+
+  //Limpiamos el timeout al desmontar para que no intente actualizar estado en un componente ya desmontado
+  useEffect(() => {
+    return () => clearTimeout(timeoutExitoRef.current);
+  }, []);
 
   // Prepara los datos del perfil en el formato que espera FormularioPerfil
   useEffect(() => {
@@ -62,7 +68,8 @@ const MiPerfil = () => {
       setModoEdicion(false);
       setConfirmandoEliminar(false);
       setMensajeExito(true);
-      setTimeout(() => setMensajeExito(false), 3000);
+      clearTimeout(timeoutExitoRef.current);
+      timeoutExitoRef.current = setTimeout(() => setMensajeExito(false), 3000);
     }
   };
 

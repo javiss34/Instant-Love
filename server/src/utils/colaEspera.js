@@ -1,7 +1,9 @@
 // Cola en memoria: array de { userId, genero, preferencia_genero }
 const cola = [];
 
-// Resultados pendientes de recoger: Map userId → llamadaId
+// Resultados pendientes de recoger: Map userId → { llamadaId, creadoEn }
+// Si el usuario no recoge su resultado en este tiempo, se descarta para no acumular entradas huérfanas
+const TIEMPO_EXPIRACION_MS = 5 * 60 * 1000;
 const resultados = new Map();
 
 // Devuelve true si la preferencia de A es compatible con el género de B
@@ -35,11 +37,18 @@ const sacarDeCola = (userId) => {
 };
 
 const guardarResultado = (userId, llamadaId) => {
-  resultados.set(userId, llamadaId);
+  resultados.set(userId, { llamadaId, creadoEn: Date.now() });
 };
 
 const obtenerResultado = (userId) => {
-  return resultados.get(userId) ?? null;
+  const entrada = resultados.get(userId);
+  if (!entrada) return null;
+  //Si el usuario no recogió su resultado a tiempo, lo descartamos
+  if (Date.now() - entrada.creadoEn > TIEMPO_EXPIRACION_MS) {
+    resultados.delete(userId);
+    return null;
+  }
+  return entrada.llamadaId;
 };
 
 const eliminarResultado = (userId) => {

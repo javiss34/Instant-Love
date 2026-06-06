@@ -15,6 +15,7 @@ const MenuMovil = ({
             <img
               src={foto}
               alt="Foto de perfil"
+              onError={(e) => { e.target.onerror = null; e.target.src = "/logo-instant-love.png"; }}
               className="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-rose-100"
             />
             <div>

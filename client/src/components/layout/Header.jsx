@@ -17,7 +17,8 @@ const Header = () => {
   //Vemos si la ubicación es inicio para aplicar un estilo diferente
   const esInicio = ubicacion.pathname === "/inicio";
 
-  const foto = perfilPropio?.foto ?? null;
+  //Si el perfil aún no cargó o no tiene foto, usamos el logo como fallback
+  const foto = perfilPropio?.foto || logo;
 
   const cerrarMenu = () => setMenuAbierto(false);
 
@@ -92,6 +93,7 @@ const Header = () => {
                   <img
                     src={foto}
                     alt="Foto de perfil"
+                    onError={(e) => { e.target.onerror = null; e.target.src = logo; }}
                     className="w-9 h-9 rounded-full object-cover shadow-md ring-2 ring-white"
                   />
                 </Link>
