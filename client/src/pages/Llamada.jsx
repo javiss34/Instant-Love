@@ -67,7 +67,8 @@ const Llamada = () => {
 
   return (
     //Diseño a pantalla completo restando la altura del Header
-    <div className="h-[calc(100vh-64px)] flex flex-col bg-slate-900 overflow-hidden">
+    //dvh en vez de vh para que en móvil descuente también la barra del navegador
+    <div className="h-[calc(100dvh-64px)] flex flex-col bg-slate-900 overflow-hidden">
       {/* Aviso de permisos, como camara/micro */}
       {avisoCamara && (
         <div className="shrink-0 bg-yellow-500 text-yellow-900 text-sm font-medium px-4 py-3 text-center">
@@ -78,22 +79,7 @@ const Llamada = () => {
 
       {/* Area del video */}
       <div className="flex-1 relative min-h-0">
-        {temporizadorActivo && (
-          /* Temporizador flotante con efecto crsital */
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-white/95 backdrop-blur px-5 py-2 rounded-full shadow-xl flex items-center gap-2">
-            <span className={`text-xl ${tiempoCritico ? "animate-pulse" : ""}`}>
-              ⏱️
-            </span>
-            <span
-              className={`font-mono font-bold text-lg tabular-nums ${
-                tiempoCritico ? "text-red-500" : "text-gray-800"
-              }`}
-            >
-              {formatearTiempo(tiempoRestante)}
-            </span>
-          </div>
-        )}
-        {/* Aquí la librería externa inyectará los videas gracias a la referencia */}
+        {/* Aquí la librería externa inyectará los videos gracias a la referencia */}
         <div className="w-full h-full" ref={contenedorRef} />
       </div>
 
@@ -109,6 +95,15 @@ const Llamada = () => {
         >
           🚩 Reportar
         </button>
+
+        {/* Temporizador en el centro de la barra para no tapar la cámara */}
+        <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+          <span className={`text-lg ${tiempoCritico ? "animate-pulse" : ""}`}>⏱️</span>
+          <span className={`font-mono font-bold text-lg tabular-nums ${tiempoCritico ? "text-red-400" : "text-white"}`}>
+            {formatearTiempo(tiempoRestante)}
+          </span>
+        </div>
+
         <div className="flex gap-4">
           <button
             onClick={() => pedirMatch(id, "salir")}
