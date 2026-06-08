@@ -96,13 +96,15 @@ const Llamada = () => {
           🚩 Reportar
         </button>
 
-        {/* Temporizador en el centro de la barra para no tapar la cámara */}
-        <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-          <span className={`text-lg ${tiempoCritico ? "animate-pulse" : ""}`}>⏱️</span>
-          <span className={`font-mono font-bold text-lg tabular-nums ${tiempoCritico ? "text-red-400" : "text-white"}`}>
-            {formatearTiempo(tiempoRestante)}
-          </span>
-        </div>
+        {/* Temporizador en el centro de la barra, solo visible cuando la cita ha empezado */}
+        {temporizadorActivo && (
+          <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+            <span className={`text-lg ${tiempoCritico ? "animate-pulse" : ""}`}>⏱️</span>
+            <span className={`font-mono font-bold text-lg tabular-nums ${tiempoCritico ? "text-red-400" : "text-white"}`}>
+              {formatearTiempo(tiempoRestante)}
+            </span>
+          </div>
+        )}
 
         <div className="flex gap-4">
           <button
