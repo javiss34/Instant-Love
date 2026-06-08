@@ -72,12 +72,12 @@ const Inicio = () => {
           </div>
 
           {/* Botón para llamar al usuario a meterse en la sala de espera para hacer videollamadas */}
-          <button
+          <BotonPrimario
             onClick={() => navegar("/sala-espera")}
-            className="bg-white text-rose-500 hover:bg-rose-50 font-semibold px-6 py-2.5 rounded-xl shadow-lg transition-colors text-sm"
+            className="bg-white text-rose-500 hover:bg-rose-50 shadow-lg"
           >
             💞 Buscar Cita
-          </button>
+          </BotonPrimario>
         </div>
       </div>
     </div>
