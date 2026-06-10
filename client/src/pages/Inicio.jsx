@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import usePerfiles from "../hooks/usePerfiles.js";
-import BotonPrimario from "../components/ui/BotonPrimario.jsx";
 
 //Sacamos la foto del componente, ya que sino react volveria a crear esta variable en memoria en cada renderizado
 const FOTO_HERO =
@@ -72,13 +71,12 @@ const Inicio = () => {
           </div>
 
           {/* Botón para llamar al usuario a meterse en la sala de espera para hacer videollamadas */}
-          <BotonPrimario
+          <button
             onClick={() => navegar("/sala-espera")}
-            variante="secundario"
-            className="w-auto px-8 shadow-lg"
+            className="text-sm font-semibold px-5 py-1.5 rounded-full shadow-md transition-colors bg-white text-rose-500 hover:bg-rose-50"
           >
             💞 Buscar Cita
-          </BotonPrimario>
+          </button>
         </div>
       </div>
     </div>
