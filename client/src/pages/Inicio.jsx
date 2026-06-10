@@ -74,7 +74,8 @@ const Inicio = () => {
           {/* Botón para llamar al usuario a meterse en la sala de espera para hacer videollamadas */}
           <BotonPrimario
             onClick={() => navegar("/sala-espera")}
-            className="bg-white text-rose-500 hover:bg-rose-50 shadow-lg"
+            variante="secundario"
+            className="w-auto px-8 shadow-lg"
           >
             💞 Buscar Cita
           </BotonPrimario>
